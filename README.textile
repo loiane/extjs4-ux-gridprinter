@@ -19,7 +19,7 @@ Ext.require([
 ]);
 
 
-p. Ext.ux.grid.Printer.print just take a single argument - a normal grid instance. Use it like this:
+Ext.ux.grid.Printer.print just take a single argument - a normal grid instance. Use it like this:
 
 bc.. var myGrid = new Ext.grid.GridPanel({
   //your usual grid config here
