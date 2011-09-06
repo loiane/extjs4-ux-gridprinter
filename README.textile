@@ -1,0 +1,50 @@
+h1. Ext.ux.grid.Printer 
+
+h2. Overview
+
+p. Ext.ux.grid.Printer is a small library that provides a way of printing Ext Grid Component.
+
+h2. Installation
+
+p. Place the folder ux/grid in your project.
+
+h2. Usage
+
+p. In your application file, please add:
+
+bc.. Ext.Loader.setConfig({enabled: true});
+
+Ext.require([
+    'Ext.ux.grid.Printer',
+]);
+
+
+p. Ext.ux.grid.Printer.print just take a single argument - a normal grid instance. Use it like this:
+
+bc.. var myGrid = new Ext.grid.GridPanel({
+  //your usual grid config here
+});
+
+Ext.ux.grid.Printer.print(myGrid);
+
+h2. Example
+
+p. Open example.html to see how to use it.
+
+h2. Custom Options
+
+p. You can customize some options:
+
+* Ext.ux.grid.Printer.printAutomatically = false; - to disable the automatic printing (the print window will not open, user will only see the print version of the grid).
+* Ext.ux.grid.Printer.stylesheetPath = '/some/other/path/gridPrint.css'; - to change the path of the css file.
+
+p. You need to set the custom config before calling Ext.ux.grid.Printer.print function.
+
+h2. Authors
+
+p. Plugin originally developed by Ed Spencer (Ext JS 3.x)
+* http://edspencer.net/2009/07/printing-grids-with-ext-js.html
+
+p. Plugin ported to Ext JS 4 by Loiane Groner
+* http://loianegroner.com (English)
+* http://loiane.com (Portuguese)
