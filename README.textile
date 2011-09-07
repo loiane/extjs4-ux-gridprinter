@@ -40,6 +40,10 @@ p. You can customize some options:
 
 p. You need to set the custom config before calling Ext.ux.grid.Printer.print function.
 
+h2. Demo
+
+p. Demo: http://loianegroner.com/extjs/examples/extjs4-ux-gridprinter/
+
 h2. Authors
 
 p. Plugin originally developed by Ed Spencer (Ext JS 3.x)
