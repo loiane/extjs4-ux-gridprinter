@@ -20,6 +20,7 @@
  * });
  * 
  * 3 - Print!
+ * Ext.ux.grid.Printer.mainTitle = 'Your Title here'; //optional
  * Ext.ux.grid.Printer.print(grid);
  * 
  * Original url: http://edspencer.net/2009/07/printing-grids-with-ext-js.html
@@ -29,6 +30,8 @@
  * http://loiane.com (Portuguese)
  * 
  * Modified by Paulo D.G. (my classmate of the job) - Março 2012
+ * 
+ * Modified by Beto Lima - March 2012 - Ported to Ext JS 4
  */
 Ext.define("Ext.ux.grid.Printer", {
 	
@@ -70,16 +73,45 @@ Ext.define("Ext.ux.grid.Printer", {
 			//use the headerTpl and bodyTpl markups to create the main XTemplate below
 			var headings = Ext.create('Ext.XTemplate', this.headerTpl).apply(columns);
 			var body     = Ext.create('Ext.XTemplate', this.bodyTpl).apply(columns);
+            
+            //Here because inline styles using CSS, the browser did not show the correct formatting of the data the first time that loaded
+            var stylesInLine = 
+                    'html,body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,p,blockquote,th,td{margin:0;padding:0;}' +
+                    'img,body,html{border:0;margin:10px}' +
+                    'address,caption,cite,code,dfn,em,strong,th,var{font-style:normal;font-weight:normal;}' +
+                    'ol,ul {list-style:none;}caption,th {text-align:left;}h1,h2,h3,h4,h5,h6{font-size:100%;}q:before,q:after{content:"";}' +
+                    'table {' +
+                    '  width: 100%;' +
+                    '  text-align: left;' +
+                    '  font-size: 11px;' +
+                    '  font-family: arial;' +
+                    '  border-collapse: collapse;' +
+                    '}' +
+                    'table th {' +
+                    '  padding: 4px 3px 4px 5px;' +
+                    '  border: 1px solid #d0d0d0;' +
+                    '  border-left-color: #eee;' +
+                    '  background-color: #ededed;' +
+                    '}' +
+                    'table td {' +
+                    '  padding: 4px 3px 4px 5px;' +
+                    '  border-style: none solid solid;' +
+                    '  border-width: 1px;' +
+                    '  border-color: #ededed;' +
+                    '}';            
 			
 			var htmlMarkup = [
 				'<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
 				'<html>',
 				  '<head>',
 				    '<meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />',
-				    '<link href="' + this.stylesheetPath + '" rel="stylesheet" type="text/css" media="screen,print" />',
+				    '<style type="text/css">',
+                        stylesInLine,
+                    '</style>',
 				    '<title>' + grid.title + '</title>',
 				  '</head>',
 				  '<body>',
+                  '<div>' + this.mainTitle + '</div>',
 				    '<table>',
 				      headings,
 				      '<tpl for=".">',
@@ -97,10 +129,19 @@ Ext.define("Ext.ux.grid.Printer", {
 
 			win.document.write(html);
 
-			if (this.printAutomatically){
-				win.print();
-				win.close();
+    		//An attempt to correct the print command to the IE browser
+            if (this.printAutomatically){
+                if(Ext.isIE){
+                    window.print();
+                } else {
+                    win.print();
+                }
 			}
+            
+            //Another way to set the closing of the main
+            if (this.closeAutomaticallyAfterPrint){
+                win.close();
+            }
 		},
 
 		/**
@@ -117,6 +158,22 @@ Ext.define("Ext.ux.grid.Printer", {
 		 * of the grid (defaults to true)
 		 */
 		printAutomatically: true,
+        
+        /**
+         * @property closeAutomaticallyAfterPrint
+         * @type Boolean
+         * True to close the window automatically after printing.
+         * (defaults to false)
+         */
+        closeAutomaticallyAfterPrint: false,        
+        
+        /**
+         * @property mainTitle
+         * @type String
+         * Title to be used on top of the table
+         * (defaults to empty)
+         */
+        mainTitle: '',        
 		
 		/**
 		 * @property headerTpl
