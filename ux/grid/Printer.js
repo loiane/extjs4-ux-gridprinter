@@ -27,6 +27,8 @@
  * Modified by Loiane Groner (me@loiane.com) - September 2011 - Ported to Ext JS 4
  * http://loianegroner.com (English)
  * http://loiane.com (Portuguese)
+ * 
+ * Modified by Paulo D.G. (my classmate of the job) - Março 2012
  */
 Ext.define("Ext.ux.grid.Printer", {
 	
@@ -44,16 +46,20 @@ Ext.define("Ext.ux.grid.Printer", {
 
 			//build a useable array of store data for the XTemplate
 			var data = [];
-			grid.store.data.each(function(item) {
+			grid.store.data.each(function(item, row) {
 				var convertedData = [];
 
 				//apply renderers from column model
 				for (var key in item.data) {
 					var value = item.data[key];
 
-					Ext.each(columns, function(column) {
+					Ext.each(columns, function(column, col) {
 						if (column.dataIndex == key) {
-							convertedData[key] = column.renderer ? column.renderer(value) : value;
+							 /*
+                             * TODO: add the meta to template
+                             */
+                            var meta = {item: '', tdAttr: '', style: ''};
+                            convertedData[key] = column.renderer ? column.renderer.call(grid, value, meta, item, row, col, grid.store, grid.view) : value;
 						}
 					}, this);
 				}
