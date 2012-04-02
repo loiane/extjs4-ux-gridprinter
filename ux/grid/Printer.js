@@ -32,6 +32,9 @@
  * Modified by Paulo D.G. (my classmate of the job) - Março 2012
  * 
  * Modified by Beto Lima - March 2012 - Ported to Ext JS 4
+ * 
+ * Modified by Beto Lima - 2012-04-02 - Ported to Ext JS 4
+ * 
  */
 Ext.define("Ext.ux.grid.Printer", {
 	
@@ -74,6 +77,9 @@ Ext.define("Ext.ux.grid.Printer", {
 			var headings = Ext.create('Ext.XTemplate', this.headerTpl).apply(columns);
 			var body     = Ext.create('Ext.XTemplate', this.bodyTpl).apply(columns);
             
+            //Button print and close at the page (optional)
+            var btnPrint = '<button type="button" onclick="javascript:window.location.reload(true);window.print(true);">Print</button> <button type="button" onclick="javascript:window.close();">Close</button><hr />';
+            
             //Here because inline styles using CSS, the browser did not show the correct formatting of the data the first time that loaded
             var stylesInLine = 
                     'html,body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,p,blockquote,th,td{margin:0;padding:0;}' +
@@ -98,7 +104,8 @@ Ext.define("Ext.ux.grid.Printer", {
                     '  border-style: none solid solid;' +
                     '  border-width: 1px;' +
                     '  border-color: #ededed;' +
-                    '}';            
+                    '}' +
+                    '@media print{#noprint{display:none;}body{background:#fff;}}';
 			
 			var htmlMarkup = [
 				'<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
@@ -111,6 +118,7 @@ Ext.define("Ext.ux.grid.Printer", {
 				    '<title>' + grid.title + '</title>',
 				  '</head>',
 				  '<body>',
+                  '<div id="noprint">' + btnPrint + '</div>',
                   '<div>' + this.mainTitle + '</div>',
 				    '<table>',
 				      headings,
@@ -125,9 +133,23 @@ Ext.define("Ext.ux.grid.Printer", {
 			var html = Ext.create('Ext.XTemplate', htmlMarkup).apply(data); 
 
 			//open up a new printing window, write to it, print it and close
+            // use: window.open('') if you want to always open in a new window
 			var win = window.open('', 'printgrid');
+            
+            //fixed the problem that every call to print, the content is duplicated on the page.
+            win.document.body.innerHTML = "";
 
 			win.document.write(html);
+            
+            //force stop the document
+            //fixed the problem where the page stayed loading without stop the content already downloaded with the screen.
+            if(win.stop !== undefined) {
+                 //Mozilla
+                 win.stop();
+            } else if(document.execCommand !== undefined) {
+                 //Internet Explorer
+                 window.document.execCommand('Stop');
+            }            
 
     		//An attempt to correct the print command to the IE browser
             if (this.printAutomatically){
@@ -140,7 +162,11 @@ Ext.define("Ext.ux.grid.Printer", {
             
             //Another way to set the closing of the main
             if (this.closeAutomaticallyAfterPrint){
-                win.close();
+                if(Ext.isIE){
+                    window.close();
+                } else {
+                    win.close();
+                }                
             }
 		},
 
@@ -155,9 +181,9 @@ Ext.define("Ext.ux.grid.Printer", {
 		 * @property printAutomatically
 		 * @type Boolean
 		 * True to open the print dialog automatically and close the window after printing. False to simply open the print version
-		 * of the grid (defaults to true)
+		 * of the grid (defaults to false)
 		 */
-		printAutomatically: true,
+		printAutomatically: false,
         
         /**
          * @property closeAutomaticallyAfterPrint
