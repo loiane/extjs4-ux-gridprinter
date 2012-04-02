@@ -37,45 +37,45 @@
  * 
  */
 Ext.define("Ext.ux.grid.Printer", {
-	
-	requires: 'Ext.XTemplate',
+    
+    requires: 'Ext.XTemplate',
 
-	statics: {
-		/**
-		 * Prints the passed grid. Reflects on the grid's column model to build a table, and fills it using the store
-		 * @param {Ext.grid.Panel} grid The grid to print
-		 */
-		print: function(grid) {
-			//We generate an XTemplate here by using 2 intermediary XTemplates - one to create the header,
-			//the other to create the body (see the escaped {} below)
-			var columns = grid.columns;
+    statics: {
+        /**
+         * Prints the passed grid. Reflects on the grid's column model to build a table, and fills it using the store
+         * @param {Ext.grid.Panel} grid The grid to print
+         */
+        print: function(grid) {
+            //We generate an XTemplate here by using 2 intermediary XTemplates - one to create the header,
+            //the other to create the body (see the escaped {} below)
+            var columns = grid.columns;
 
-			//build a useable array of store data for the XTemplate
-			var data = [];
-			grid.store.data.each(function(item, row) {
-				var convertedData = [];
+            //build a useable array of store data for the XTemplate
+            var data = [];
+            grid.store.data.each(function(item, row) {
+                var convertedData = [];
 
-				//apply renderers from column model
-				for (var key in item.data) {
-					var value = item.data[key];
+                //apply renderers from column model
+                for (var key in item.data) {
+                    var value = item.data[key];
 
-					Ext.each(columns, function(column, col) {
-						if (column.dataIndex == key) {
-							 /*
+                    Ext.each(columns, function(column, col) {
+                        if (column.dataIndex == key) {
+                             /*
                              * TODO: add the meta to template
                              */
                             var meta = {item: '', tdAttr: '', style: ''};
                             convertedData[key] = column.renderer ? column.renderer.call(grid, value, meta, item, row, col, grid.store, grid.view) : value;
-						}
-					}, this);
-				}
+                        }
+                    }, this);
+                }
 
-				data.push(convertedData);
-			});
+                data.push(convertedData);
+            });
 
-			//use the headerTpl and bodyTpl markups to create the main XTemplate below
-			var headings = Ext.create('Ext.XTemplate', this.headerTpl).apply(columns);
-			var body     = Ext.create('Ext.XTemplate', this.bodyTpl).apply(columns);
+            //use the headerTpl and bodyTpl markups to create the main XTemplate below
+            var headings = Ext.create('Ext.XTemplate', this.headerTpl).apply(columns);
+            var body     = Ext.create('Ext.XTemplate', this.bodyTpl).apply(columns);
             
             //Button print and close at the page (optional)
             var btnPrint = '<button type="button" onclick="javascript:window.location.reload(true);window.print(true);">Print</button> <button type="button" onclick="javascript:window.close();">Close</button><hr />';
@@ -106,40 +106,40 @@ Ext.define("Ext.ux.grid.Printer", {
                     '  border-color: #ededed;' +
                     '}' +
                     '@media print{#noprint{display:none;}body{background:#fff;}}';
-			
-			var htmlMarkup = [
-				'<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
-				'<html>',
-				  '<head>',
-				    '<meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />',
-				    '<style type="text/css">',
+            
+            var htmlMarkup = [
+                '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
+                '<html>',
+                  '<head>',
+                    '<meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />',
+                    '<style type="text/css">',
                         stylesInLine,
                     '</style>',
-				    '<title>' + grid.title + '</title>',
-				  '</head>',
-				  '<body>',
+                    '<title>' + grid.title + '</title>',
+                  '</head>',
+                  '<body>',
                   '<div id="noprint">' + btnPrint + '</div>',
                   '<div>' + this.mainTitle + '</div>',
-				    '<table>',
-				      headings,
-				      '<tpl for=".">',
-				        body,
-				      '</tpl>',
-				    '</table>',
-				  '</body>',
-				'</html>'           
-			];
+                    '<table>',
+                      headings,
+                      '<tpl for=".">',
+                        body,
+                      '</tpl>',
+                    '</table>',
+                  '</body>',
+                '</html>'           
+            ];
 
-			var html = Ext.create('Ext.XTemplate', htmlMarkup).apply(data); 
+            var html = Ext.create('Ext.XTemplate', htmlMarkup).apply(data); 
 
-			//open up a new printing window, write to it, print it and close
+            //open up a new printing window, write to it, print it and close
             // use: window.open('') if you want to always open in a new window
-			var win = window.open('', 'printgrid');
+            var win = window.open('', 'printgrid');
             
             //fixed the problem that every call to print, the content is duplicated on the page.
             win.document.body.innerHTML = "";
 
-			win.document.write(html);
+            win.document.write(html);
             
             //force stop the document
             //fixed the problem where the page stayed loading without stop the content already downloaded with the screen.
@@ -151,14 +151,14 @@ Ext.define("Ext.ux.grid.Printer", {
                  window.document.execCommand('Stop');
             }            
 
-    		//An attempt to correct the print command to the IE browser
+            //An attempt to correct the print command to the IE browser
             if (this.printAutomatically){
                 if(Ext.isIE){
                     window.print();
                 } else {
                     win.print();
                 }
-			}
+            }
             
             //Another way to set the closing of the main
             if (this.closeAutomaticallyAfterPrint){
@@ -168,22 +168,22 @@ Ext.define("Ext.ux.grid.Printer", {
                     win.close();
                 }                
             }
-		},
+        },
 
-		/**
-		 * @property stylesheetPath
-		 * @type String
-		 * The path at which the print stylesheet can be found (defaults to 'ux/grid/gridPrinterCss/print.css')
-		 */
-		stylesheetPath: 'ux/grid/gridPrinterCss/print.css',
-		
-		/**
-		 * @property printAutomatically
-		 * @type Boolean
-		 * True to open the print dialog automatically and close the window after printing. False to simply open the print version
-		 * of the grid (defaults to false)
-		 */
-		printAutomatically: false,
+        /**
+         * @property stylesheetPath
+         * @type String
+         * The path at which the print stylesheet can be found (defaults to 'ux/grid/gridPrinterCss/print.css')
+         */
+        stylesheetPath: 'ux/grid/gridPrinterCss/print.css',
+        
+        /**
+         * @property printAutomatically
+         * @type Boolean
+         * True to open the print dialog automatically and close the window after printing. False to simply open the print version
+         * of the grid (defaults to false)
+         */
+        printAutomatically: false,
         
         /**
          * @property closeAutomaticallyAfterPrint
@@ -200,32 +200,32 @@ Ext.define("Ext.ux.grid.Printer", {
          * (defaults to empty)
          */
         mainTitle: '',        
-		
-		/**
-		 * @property headerTpl
-		 * @type {Object/Array} values
-		 * The markup used to create the headings row. By default this just uses <th> elements, override to provide your own
-		 */
-		headerTpl: [ 
-			'<tr>',
-				'<tpl for=".">',
-					'<th>{text}</th>',
-				'</tpl>',
-			'</tr>'
-		],
+        
+        /**
+         * @property headerTpl
+         * @type {Object/Array} values
+         * The markup used to create the headings row. By default this just uses <th> elements, override to provide your own
+         */
+        headerTpl: [ 
+            '<tr>',
+                '<tpl for=".">',
+                    '<th>{text}</th>',
+                '</tpl>',
+            '</tr>'
+        ],
 
-		/**
-		 * @property bodyTpl
-		 * @type {Object/Array} values
-		 * The XTemplate used to create each row. This is used inside the 'print' function to build another XTemplate, to which the data
-		 * are then applied (see the escaped dataIndex attribute here - this ends up as "{dataIndex}")
-		 */
-		bodyTpl: [
-			'<tr>',
-				'<tpl for=".">',
-					'<td>\{{dataIndex}\}</td>',
-				'</tpl>',
-			'</tr>'
-		]
-	}
+        /**
+         * @property bodyTpl
+         * @type {Object/Array} values
+         * The XTemplate used to create each row. This is used inside the 'print' function to build another XTemplate, to which the data
+         * are then applied (see the escaped dataIndex attribute here - this ends up as "{dataIndex}")
+         */
+        bodyTpl: [
+            '<tr>',
+                '<tpl for=".">',
+                    '<td>\{{dataIndex}\}</td>',
+                '</tpl>',
+            '</tr>'
+        ]
+    }
 });
