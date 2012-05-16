@@ -72,6 +72,15 @@ Ext.define("Ext.ux.grid.Printer", {
 
                 data.push(convertedData);
             });
+            
+            //remove columns that do not contains dataIndex or dataIndex is empty. for example: columns filter or columns button
+            var clearColumns = [];
+            Ext.each(columns, function (column) {
+                if (column.dataIndex != ""  && !column.hidden) {
+                    clearColumns.push(column);
+                }
+            });
+            columns = clearColumns;
 
             //use the headerTpl and bodyTpl markups to create the main XTemplate below
             var headings = Ext.create('Ext.XTemplate', this.headerTpl).apply(columns);
@@ -105,7 +114,7 @@ Ext.define("Ext.ux.grid.Printer", {
                     '  border-width: 1px;' +
                     '  border-color: #ededed;' +
                     '}' +
-                    '@media print{#noprint{display:none;}body{background:#fff;}}';
+                    '@media print{@page {size: landscape};#noprint{display:none;}body{background:#fff;}}';
             
             var htmlMarkup = [
                 '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
