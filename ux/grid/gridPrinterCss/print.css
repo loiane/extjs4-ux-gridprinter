@@ -91,7 +91,7 @@ html.x-ux-grid-printer, .x-ux-grid-printer img,.x-ux-grid-printer body {
         margin: 0;
         padding: 0;
     }
-    .x-ux-grid-printer div..x-ux-grid-printer-noprint {
+    .x-ux-grid-printer div.x-ux-grid-printer-noprint {
         display: none;
     }
 }
