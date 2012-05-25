@@ -29,11 +29,13 @@
  * http://loianegroner.com (English)
  * http://loiane.com (Portuguese)
  * 
- * Modified by Paulo D.G. (my classmate of the job) - Março 2012
+ * Modified by Paulo Goncalves - March 2012
  * 
- * Modified by Beto Lima - March 2012 - Ported to Ext JS 4
+ * Modified by Beto Lima - March 2012
  * 
- * Modified by Beto Lima - 2012-04-02 - Ported to Ext JS 4
+ * Modified by Beto Lima - April 2012
+ *
+ * Modified by Paulo Goncalves - May 2012
  * 
  */
 Ext.define("Ext.ux.grid.Printer", {
@@ -53,7 +55,7 @@ Ext.define("Ext.ux.grid.Printer", {
             //build a useable array of store data for the XTemplate
             var data = [];
             grid.store.data.each(function(item, row) {
-                var convertedData = [];
+                var convertedData = {};
 
                 //apply renderers from column model
                 for (var key in item.data) {
@@ -61,13 +63,14 @@ Ext.define("Ext.ux.grid.Printer", {
 
                     Ext.each(columns, function(column, col) {
                         if (column.dataIndex == key) {
-                             /*
+                            /*
                              * TODO: add the meta to template
                              */
                             var meta = {item: '', tdAttr: '', style: ''};
-                            convertedData[key] = column.renderer ? column.renderer.call(grid, value, meta, item, row, col, grid.store, grid.view) : value;
+                            value = column.renderer ? column.renderer.call(grid, value, meta, item, row, col, grid.store, grid.view) : value;
                         }
                     }, this);
+                    convertedData[key] = value;
                 }
 
                 data.push(convertedData);
@@ -76,63 +79,56 @@ Ext.define("Ext.ux.grid.Printer", {
             //remove columns that do not contains dataIndex or dataIndex is empty. for example: columns filter or columns button
             var clearColumns = [];
             Ext.each(columns, function (column) {
-                if (column.dataIndex != ""  && !column.hidden) {
+                if (!Ext.isEmpty(column.dataIndex) && !column.hidden) {
                     clearColumns.push(column);
                 }
             });
             columns = clearColumns;
+            
+            //get Styles file relative location, if not supplied
+            if (this.stylesheetPath === null) {
+                var scriptPath = Ext.Loader.getPath('Ext.ux.grid.Printer');
+                this.stylesheetPath = scriptPath.substring(0, scriptPath.indexOf('Printer.js')) + 'gridPrinterCss/print.css';
+            }
 
             //use the headerTpl and bodyTpl markups to create the main XTemplate below
             var headings = Ext.create('Ext.XTemplate', this.headerTpl).apply(columns);
             var body     = Ext.create('Ext.XTemplate', this.bodyTpl).apply(columns);
+            var pluginsBody = '';
             
-            //Button print and close at the page (optional)
-            var btnPrint = '<button type="button" onclick="javascript:window.location.reload(true);window.print(true);">Print</button> <button type="button" onclick="javascript:window.close();">Close</button><hr />';
+            //add relevant plugins
+            Ext.each(grid.plugins, function(p) {
+                if (p.ptype == 'rowexpander') {
+                    pluginsBody += p.rowBodyTpl.join('');
+                }
+            });
             
             //Here because inline styles using CSS, the browser did not show the correct formatting of the data the first time that loaded
-            var stylesInLine = 
-                    'html,body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,p,blockquote,th,td{margin:0;padding:0;}' +
-                    'img,body,html{border:0;margin:10px}' +
-                    'address,caption,cite,code,dfn,em,strong,th,var{font-style:normal;font-weight:normal;}' +
-                    'ol,ul {list-style:none;}caption,th {text-align:left;}h1,h2,h3,h4,h5,h6{font-size:100%;}q:before,q:after{content:"";}' +
-                    'table {' +
-                    '  width: 100%;' +
-                    '  text-align: left;' +
-                    '  font-size: 11px;' +
-                    '  font-family: arial;' +
-                    '  border-collapse: collapse;' +
-                    '}' +
-                    'table th {' +
-                    '  padding: 4px 3px 4px 5px;' +
-                    '  border: 1px solid #d0d0d0;' +
-                    '  border-left-color: #eee;' +
-                    '  background-color: #ededed;' +
-                    '}' +
-                    'table td {' +
-                    '  padding: 4px 3px 4px 5px;' +
-                    '  border-style: none solid solid;' +
-                    '  border-width: 1px;' +
-                    '  border-color: #ededed;' +
-                    '}' +
-                    '@media print{@page {size: landscape};#noprint{display:none;}body{background:#fff;}}';
-            
             var htmlMarkup = [
                 '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
-                '<html>',
+                '<html class="' + Ext.baseCSSPrefix + 'ux-grid-printer">',
                   '<head>',
                     '<meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />',
-                    '<style type="text/css">',
-                        stylesInLine,
-                    '</style>',
+                    '<link href="' + this.stylesheetPath + '" rel="stylesheet" type="text/css" />',
                     '<title>' + grid.title + '</title>',
                   '</head>',
-                  '<body>',
-                  '<div id="noprint">' + btnPrint + '</div>',
-                  '<div>' + this.mainTitle + '</div>',
+                  '<body class="' + Ext.baseCSSPrefix + 'ux-grid-printer-body">',
+                  '<div class="' + Ext.baseCSSPrefix + 'ux-grid-printer-noprint ' + Ext.baseCSSPrefix + 'ux-grid-printer-links">',
+                      '<a class="' + Ext.baseCSSPrefix + 'ux-grid-printer-linkprint" href="javascript:void(0);" onclick="window.print();">' + this.printLinkText + '</a>',
+                      '<a class="' + Ext.baseCSSPrefix + 'ux-grid-printer-linkclose" href="javascript:void(0);" onclick="window.close();">' + this.closeLinkText + '</a>',
+                  '</div>',
+                  '<h1>' + this.mainTitle + '</h1>',
                     '<table>',
-                      headings,
+                      '<tr>',
+                        headings,
+                      '</tr>',
                       '<tpl for=".">',
-                        body,
+                        '<tr class="{[xindex % 2 === 0 ? "even" : "odd"]}">',
+                          body,
+                        '</tr>',
+                        '<tr class="{[xindex % 2 === 0 ? "even" : "odd"]}"><td colspan="' + columns.length + '">',
+                          pluginsBody,
+                        '</td></tr>',
                       '</tpl>',
                     '</table>',
                   '</body>',
@@ -142,24 +138,13 @@ Ext.define("Ext.ux.grid.Printer", {
             var html = Ext.create('Ext.XTemplate', htmlMarkup).apply(data); 
 
             //open up a new printing window, write to it, print it and close
-            // use: window.open('') if you want to always open in a new window
             var win = window.open('', 'printgrid');
             
-            //fixed the problem that every call to print, the content is duplicated on the page.
-            win.document.body.innerHTML = "";
-
+            //document must be open and closed
+            win.document.open();
             win.document.write(html);
+            win.document.close();
             
-            //force stop the document
-            //fixed the problem where the page stayed loading without stop the content already downloaded with the screen.
-            if(win.stop !== undefined) {
-                 //Mozilla
-                 win.stop();
-            } else if(document.execCommand !== undefined) {
-                 //Internet Explorer
-                 window.document.execCommand('Stop');
-            }            
-
             //An attempt to correct the print command to the IE browser
             if (this.printAutomatically){
                 if(Ext.isIE){
@@ -184,7 +169,7 @@ Ext.define("Ext.ux.grid.Printer", {
          * @type String
          * The path at which the print stylesheet can be found (defaults to 'ux/grid/gridPrinterCss/print.css')
          */
-        stylesheetPath: 'ux/grid/gridPrinterCss/print.css',
+        stylesheetPath: null,
         
         /**
          * @property printAutomatically
@@ -208,7 +193,19 @@ Ext.define("Ext.ux.grid.Printer", {
          * Title to be used on top of the table
          * (defaults to empty)
          */
-        mainTitle: '',        
+        mainTitle: '',
+        
+        /**
+         * Text show on print link
+         * @type String
+         */
+        printLinkText: 'Print',
+        
+        /**
+         * Text show on close link
+         * @type String
+         */
+        closeLinkText: 'Close',
         
         /**
          * @property headerTpl
@@ -216,11 +213,9 @@ Ext.define("Ext.ux.grid.Printer", {
          * The markup used to create the headings row. By default this just uses <th> elements, override to provide your own
          */
         headerTpl: [ 
-            '<tr>',
-                '<tpl for=".">',
-                    '<th>{text}</th>',
-                '</tpl>',
-            '</tr>'
+            '<tpl for=".">',
+                '<th>{text}</th>',
+            '</tpl>',
         ],
 
         /**
@@ -230,11 +225,9 @@ Ext.define("Ext.ux.grid.Printer", {
          * are then applied (see the escaped dataIndex attribute here - this ends up as "{dataIndex}")
          */
         bodyTpl: [
-            '<tr>',
-                '<tpl for=".">',
-                    '<td>\{{dataIndex}\}</td>',
-                '</tpl>',
-            '</tr>'
+            '<tpl for=".">',
+                '<td>\{{dataIndex}\}</td>',
+            '</tpl>',
         ]
     }
 });
