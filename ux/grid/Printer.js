@@ -37,6 +37,8 @@
  *
  * Modified by Paulo Goncalves - May 2012
  * 
+ * Modified by Nielsen Teixeira - 2012-05-02
+ * 
  */
 Ext.define("Ext.ux.grid.Printer", {
     
