@@ -35,6 +35,8 @@
  * 
  * Modified by Beto Lima - 2012-04-02 - Ported to Ext JS 4
  * 
+ * Modified by Nielsen Teixeira - 2012-05-02
+ * 
  */
 Ext.define("Ext.ux.grid.Printer", {
     
