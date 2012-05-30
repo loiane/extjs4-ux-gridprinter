@@ -96,7 +96,8 @@ Ext.define("Ext.ux.grid.Printer", {
             //use the headerTpl and bodyTpl markups to create the main XTemplate below
             var headings = Ext.create('Ext.XTemplate', this.headerTpl).apply(columns);
             var body     = Ext.create('Ext.XTemplate', this.bodyTpl).apply(columns);
-            var pluginsBody = '';
+            var pluginsBody = '',
+                pluginsBodyMarkup = [];
             
             //add relevant plugins
             Ext.each(grid.plugins, function(p) {
@@ -104,6 +105,14 @@ Ext.define("Ext.ux.grid.Printer", {
                     pluginsBody += p.rowBodyTpl.join('');
                 }
             });
+            
+            if (pluginsBody != '') {
+                pluginsBodyMarkup = [
+                    '<tr class="{[xindex % 2 === 0 ? "even" : "odd"]}"><td colspan="' + columns.length + '">',
+                      pluginsBody,
+                    '</td></tr>',
+                ];
+            }
             
             //Here because inline styles using CSS, the browser did not show the correct formatting of the data the first time that loaded
             var htmlMarkup = [
@@ -128,9 +137,7 @@ Ext.define("Ext.ux.grid.Printer", {
                         '<tr class="{[xindex % 2 === 0 ? "even" : "odd"]}">',
                           body,
                         '</tr>',
-                        '<tr class="{[xindex % 2 === 0 ? "even" : "odd"]}"><td colspan="' + columns.length + '">',
-                          pluginsBody,
-                        '</td></tr>',
+                        pluginsBodyMarkup.join(''),
                       '</tpl>',
                     '</table>',
                   '</body>',
