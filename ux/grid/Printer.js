@@ -38,7 +38,9 @@
  * Modified by Paulo Goncalves - May 2012
  * 
  * Modified by Nielsen Teixeira - 2012-05-02
- * 
+ *
+ * Modified by Joshua Bradley - 2012-06-01
+ *
  */
 Ext.define("Ext.ux.grid.Printer", {
     
@@ -52,7 +54,15 @@ Ext.define("Ext.ux.grid.Printer", {
         print: function(grid) {
             //We generate an XTemplate here by using 2 intermediary XTemplates - one to create the header,
             //the other to create the body (see the escaped {} below)
-            var columns = grid.columns;
+            var columns = [];
+            //account for grouped columns
+            Ext.each(grid.columns, function(c) {
+                if(c.items.length > 0) {
+                    columns = columns.concat(c.items.items);
+                } else {
+                    columns.push(c);
+                }
+            });
 
             //build a useable array of store data for the XTemplate
             var data = [];
