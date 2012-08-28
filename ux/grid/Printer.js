@@ -29,6 +29,8 @@
  * http://loianegroner.com (English)
  * http://loiane.com (Portuguese)
  * 
+ * Modified by Bruno Sales - August 2012
+ * 
  * Modified by Paulo Goncalves - March 2012
  * 
  * Modified by Beto Lima - March 2012
@@ -152,13 +154,8 @@ Ext.define("Ext.ux.grid.Printer", {
             win.document.write(html);
             win.document.close();
             
-            //An attempt to correct the print command to the IE browser
             if (this.printAutomatically){
-                if(Ext.isIE){
-                    window.print();
-                } else {
-                    win.print();
-                }
+                win.print();
             }
             
             //Another way to set the closing of the main
