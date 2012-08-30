@@ -66,7 +66,7 @@ Ext.define("Ext.ux.grid.Printer", {
                 }
             });
 
-            //build a useable array of store data for the XTemplate
+            //build a usable array of store data for the XTemplate
             var data = [];
             grid.store.data.each(function(item, row) {
                 var convertedData = {};
@@ -82,9 +82,9 @@ Ext.define("Ext.ux.grid.Printer", {
                              */
                             var meta = {item: '', tdAttr: '', style: ''};
                             value = column.renderer ? column.renderer.call(grid, value, meta, item, row, col, grid.store, grid.view) : value;
+                            convertedData[Ext.String.createVarName(column.text)] = value;
                         }
                     }, this);
-                    convertedData[key] = value;
                 }
 
                 data.push(convertedData);
@@ -122,7 +122,7 @@ Ext.define("Ext.ux.grid.Printer", {
                 pluginsBodyMarkup = [
                     '<tr class="{[xindex % 2 === 0 ? "even" : "odd"]}"><td colspan="' + columns.length + '">',
                       pluginsBody,
-                    '</td></tr>',
+                    '</td></tr>'
                 ];
             }
             
@@ -231,7 +231,7 @@ Ext.define("Ext.ux.grid.Printer", {
         headerTpl: [ 
             '<tpl for=".">',
                 '<th>{text}</th>',
-            '</tpl>',
+            '</tpl>'
         ],
 
         /**
@@ -242,8 +242,8 @@ Ext.define("Ext.ux.grid.Printer", {
          */
         bodyTpl: [
             '<tpl for=".">',
-                '<td>\{{dataIndex}\}</td>',
-            '</tpl>',
+                '<td>\{{[Ext.String.createVarName(values.text)]}\}</td>',
+            '</tpl>'
         ]
     }
 });
