@@ -76,7 +76,7 @@ Ext.define("Ext.ux.grid.Printer", {
                     var value = item.data[key];
 
                     Ext.each(columns, function(column, col) {
-                        if (column.dataIndex == key) {
+                        if (column && column.dataIndex == key) {
                             /*
                              * TODO: add the meta to template
                              */
@@ -93,7 +93,7 @@ Ext.define("Ext.ux.grid.Printer", {
             //remove columns that do not contains dataIndex or dataIndex is empty. for example: columns filter or columns button
             var clearColumns = [];
             Ext.each(columns, function (column) {
-                if (!Ext.isEmpty(column.dataIndex) && !column.hidden) {
+                if ((column) && (!Ext.isEmpty(column.dataIndex) && !column.hidden)) {
                     clearColumns.push(column);
                 }
             });
