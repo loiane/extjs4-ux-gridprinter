@@ -42,6 +42,8 @@
  * Modified by Nielsen Teixeira - 2012-05-02
  *
  * Modified by Joshua Bradley - 2012-06-01
+ * 
+ * Modified by Loiane Groner - 2012-09-08
  *
  */
 Ext.define("Ext.ux.grid.Printer", {
