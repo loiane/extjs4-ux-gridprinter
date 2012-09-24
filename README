@@ -19,7 +19,7 @@ Ext.require([
 ]);
 
 
-Ext.ux.grid.Printer.print just take a single argument - a normal grid instance. Use it like this:
+p. Ext.ux.grid.Printer.print just take a single argument - a normal grid instance. Use it like this:
 
 bc.. var myGrid = new Ext.grid.GridPanel({
   //your usual grid config here
@@ -42,7 +42,7 @@ p. You need to set the custom config before calling Ext.ux.grid.Printer.print fu
 
 h2. Demo
 
-p. Demo: http://loianegroner.com/extjs/examples/extjs4-ux-gridprinter/
+Demo: http://loianegroner.com/extjs/examples/extjs4-ux-gridprinter/
 
 h2. Authors
 
