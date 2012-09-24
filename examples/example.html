@@ -3,14 +3,20 @@
     <title>Grid with GridPrinter feature</title>
 
 	<!-- Ext JS Files -->
-    <link rel="stylesheet" type="text/css" href="http://extjs.cachefly.net/ext-4.0.2/resources/css/ext-all.css" />
-    <script type="text/javascript" src="http://extjs.cachefly.net/ext-4.0.2/bootstrap.js"></script>
+    <link rel="stylesheet" type="text/css" href="http://extjs.cachefly.net/ext-4.1.1-gpl/resources/css/ext-all.css" />
+    <script type="text/javascript" src="http://extjs.cachefly.net/ext-4.1.1-gpl/ext-all.js"></script>
 
 	<!-- Application Specific Files -->
-	<link rel="stylesheet" type="text/css" href="resources/example.css" />
+	<link rel="stylesheet" type="text/css" href="../resources/example.css" />
 
 	<script type="text/javascript">
-	Ext.Loader.setConfig({enabled: true});
+	Ext.Loader.setConfig({
+	    enabled: true,
+	    paths: {
+	        Ext: '.',
+	        'Ext.ux': '../ux'
+	    }
+	});
 
 	Ext.require([
 	    'Ext.grid.*',
@@ -91,6 +97,9 @@
 	        data: myData
 	    });
 
+		////////////////////////////////////////////////////////////////////////////////////////
+		// Grid 1
+		////////////////////////////////////////////////////////////////////////////////////////
 	    // create the Grid
 	    var grid = Ext.create('Ext.grid.Panel', {
 	        store: store,
@@ -142,6 +151,35 @@
 	            handler : function(){
 	            	Ext.ux.grid.Printer.printAutomatically = false;
 	            	Ext.ux.grid.Printer.print(grid);
+	            }
+	        }],
+			renderTo: Ext.getBody()
+	    });
+	
+		////////////////////////////////////////////////////////////////////////////////////////
+	    // Grid 2
+	    ////////////////////////////////////////////////////////////////////////////////////////
+	    var grid2 = Ext.create('Ext.grid.Panel', {
+	        store: store,
+	        columns: [
+	            Ext.create('Ext.grid.RowNumberer'),
+	            {text: "Company", flex: 1, sortable: true, dataIndex: 'company'},
+	            {text: "Price", width: 120, sortable: true, renderer: Ext.util.Format.usMoney, dataIndex: 'price'},
+	            {text: "Change", width: 120, sortable: true, dataIndex: 'change'},
+	            {text: "% Change", width: 120, sortable: true, dataIndex: 'pctChange'},
+	            {text: "Last Updated", width: 120, sortable: true, renderer: Ext.util.Format.dateRenderer('m/d/Y'), dataIndex: 'lastChange'}
+	        ],
+	        columnLines: true,
+	        width:600,
+	        height:300,
+	        title:'Grid with Numbered Rows',
+	        renderTo: Ext.getBody(),
+			tbar: [{
+	            text: 'Print',
+	            iconCls: 'icon-print',
+	            handler : function(){
+	            	Ext.ux.grid.Printer.printAutomatically = false;
+	            	Ext.ux.grid.Printer.print(grid2);
 	            }
 	        }]
 	    });

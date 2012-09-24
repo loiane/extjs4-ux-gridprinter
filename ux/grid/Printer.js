@@ -44,6 +44,8 @@
  * Modified by Joshua Bradley - 2012-06-01
  * 
  * Modified by Loiane Groner - 2012-09-08
+	* 
+ * Modified by Loiane Groner - 2012-09-24
  *
  */
 Ext.define("Ext.ux.grid.Printer", {
@@ -85,7 +87,9 @@ Ext.define("Ext.ux.grid.Printer", {
                             var meta = {item: '', tdAttr: '', style: ''};
                             value = column.renderer ? column.renderer.call(grid, value, meta, item, row, col, grid.store, grid.view) : value;
                             convertedData[Ext.String.createVarName(column.text)] = value;
-                        }
+                        } else if (column && column.xtype === 'rownumberer'){
+							convertedData['Row'] = row;
+						}
                     }, this);
                 }
 
@@ -97,7 +101,10 @@ Ext.define("Ext.ux.grid.Printer", {
             Ext.each(columns, function (column) {
                 if ((column) && (!Ext.isEmpty(column.dataIndex) && !column.hidden)) {
                     clearColumns.push(column);
-                }
+                } else	if (column && column.xtype === 'rownumberer'){
+					column.text = 'Row';
+					clearColumns.push(column);
+				}
             });
             columns = clearColumns;
             
