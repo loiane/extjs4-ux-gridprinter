@@ -1,0 +1,50 @@
+{
+    "type": "controller",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "designer|userClassName": "Company",
+        "requires": [
+            "Ext.ux.grid.Printer"
+        ],
+        "models": [
+            "Company"
+        ],
+        "stores": [
+            "Companies"
+        ],
+        "views": [
+            "CompanyGrid"
+        ]
+    },
+    "id": "ExtBox1-ext-gen17341",
+    "designerId": "7baa9d14-bb0f-4f9b-bad1-8ea0e004d83d",
+    "cn": [
+        {
+            "type": "controlleraction",
+            "reference": {
+                "name": "listeners",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "designer|userClassName": "onPrint",
+                "fn": "onPrint",
+                "implHandler": [
+                    "var grid = button.up('companygrid');",
+                    "    ",
+                    "Ext.ux.grid.Printer.printAutomatically = false;",
+                    "Ext.ux.grid.Printer.print(grid);    "
+                ],
+                "name": "click",
+                "scope": "me",
+                "designer|targetType": "Ext.button.Button",
+                "designer|controlQuery": "companygrid button#print"
+            },
+            "designerId": "4660767e-d181-4793-b77d-7e186fa5e461"
+        }
+    ]
+}

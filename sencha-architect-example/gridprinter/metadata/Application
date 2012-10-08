@@ -1,0 +1,37 @@
+{
+    "type": "application",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "autoCreateViewport": true,
+        "name": "Example",
+        "controllers": [
+            "Company"
+        ]
+    },
+    "id": "ExtBox1-ext-gen1773",
+    "designerId": "application",
+    "cn": [
+        {
+            "type": "loader",
+            "reference": {
+                "name": "loader",
+                "type": "object"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "designer|userClassName": "Loader64",
+                "enabled": true,
+                "paths": [
+                    "{\"Ext\":\".\",",
+                    " \"Ext.ux\" : \"ux\"",
+                    "}"
+                ]
+            },
+            "designerId": "e800e2cf-f96d-4dae-a564-b8ff92ecd505"
+        }
+    ]
+}

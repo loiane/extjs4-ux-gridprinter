@@ -1,0 +1,12 @@
+body {
+    padding:20px;
+    padding-top:32px;
+}
+
+body .x-panel {
+    margin-bottom:20px;
+}
+
+.icon-print { 
+	background-image: url(images/printer.png) !important; 
+}

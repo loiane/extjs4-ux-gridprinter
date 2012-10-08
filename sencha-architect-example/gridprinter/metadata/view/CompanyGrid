@@ -1,0 +1,135 @@
+{
+    "type": "gridpanel",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "designer|userClassName": "CompanyGrid",
+        "designer|userAlias": "companygrid",
+        "designer|initialView": true,
+        "height": 300,
+        "width": 600,
+        "title": "My Grid Panel",
+        "store": "Companies"
+    },
+    "id": "ExtBox1-ext-gen8871",
+    "designerId": "35cd986b-5e73-4e08-9808-52aec5aeeeaf",
+    "cn": [
+        {
+            "type": "gridview",
+            "reference": {
+                "name": "viewConfig",
+                "type": "object"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "designer|userClassName": "MyGridView"
+            },
+            "designerId": "d700ddcf-8998-4cb0-ac48-f6ef527b6bcd"
+        },
+        {
+            "type": "gridcolumn",
+            "reference": {
+                "name": "columns",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "designer|userClassName": "MyColumn",
+                "dataIndex": "company",
+                "flex": 1,
+                "text": "Company"
+            },
+            "designerId": "3c7722a5-3a14-4a5e-b2df-5fee35dbf733"
+        },
+        {
+            "type": "numbercolumn",
+            "reference": {
+                "name": "columns",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "designer|userClassName": "MyNumberColumn",
+                "dataIndex": "price",
+                "text": "Price"
+            },
+            "designerId": "5a502925-06d8-4d98-abea-8410c4a34706"
+        },
+        {
+            "type": "numbercolumn",
+            "reference": {
+                "name": "columns",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "designer|userClassName": "MyNumberColumn4",
+                "dataIndex": "change",
+                "text": "Change"
+            },
+            "designerId": "ede9f11c-b475-4343-95cb-a45ff89fdec8"
+        },
+        {
+            "type": "numbercolumn",
+            "reference": {
+                "name": "columns",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "designer|userClassName": "MyNumberColumn5",
+                "dataIndex": "pctChange",
+                "text": "PctChange"
+            },
+            "designerId": "e7d9d31a-bd0d-42fa-9a17-c0d5862affe7"
+        },
+        {
+            "type": "datecolumn",
+            "reference": {
+                "name": "columns",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "designer|userClassName": "MyDateColumn",
+                "dataIndex": "lastChange",
+                "text": "LastChange"
+            },
+            "designerId": "0d5336e0-df2e-4294-98be-2f77a4c675f5"
+        },
+        {
+            "type": "toolbar",
+            "reference": {
+                "name": "dockedItems",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "dock": "top",
+                "designer|userClassName": "MyToolbar"
+            },
+            "designerId": "fdfb4d10-5eb5-4dee-9a0f-0abb7134cdac",
+            "cn": [
+                {
+                    "type": "button",
+                    "reference": {
+                        "name": "items",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "layout|flex": null,
+                        "designer|userClassName": "MyButton",
+                        "itemId": "print",
+                        "iconCls": "icon-print",
+                        "text": "Print"
+                    },
+                    "designerId": "7fa49208-6382-4099-829d-359935f0b4e3"
+                }
+            ]
+        }
+    ]
+}

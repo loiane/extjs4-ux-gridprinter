@@ -1,0 +1,86 @@
+{
+    "type": "datamodel",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "designer|userClassName": "Company",
+        "idProperty": "company"
+    },
+    "id": "ExtBox1-ext-gen11617",
+    "designerId": "b84135e4-f890-45ae-af24-d550352279ed",
+    "cn": [
+        {
+            "type": "datafield",
+            "reference": {
+                "name": "fields",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "designer|userClassName": "field",
+                "name": "company"
+            },
+            "designerId": "61754286-ebb6-4d88-998e-d3f51836fc84"
+        },
+        {
+            "type": "datafield",
+            "reference": {
+                "name": "fields",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "designer|userClassName": "field1",
+                "name": "price",
+                "type": "float"
+            },
+            "designerId": "405ef502-df35-4b5a-aab2-e61a6cb76b5d"
+        },
+        {
+            "type": "datafield",
+            "reference": {
+                "name": "fields",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "designer|userClassName": "field2",
+                "name": "change",
+                "type": "float"
+            },
+            "designerId": "874260f1-bba1-4854-949c-cce62642f3f9"
+        },
+        {
+            "type": "datafield",
+            "reference": {
+                "name": "fields",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "designer|userClassName": "field3",
+                "name": "pctChange",
+                "type": "float"
+            },
+            "designerId": "b672141a-ac00-425a-9eb2-d7c3462164df"
+        },
+        {
+            "type": "datafield",
+            "reference": {
+                "name": "fields",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "designer|userClassName": "field4",
+                "name": "lastChange",
+                "dateFormat": "n/j h:ia",
+                "type": "date"
+            },
+            "designerId": "0fb40e9e-151e-4dbb-9a7d-7320921bcf30"
+        }
+    ]
+}

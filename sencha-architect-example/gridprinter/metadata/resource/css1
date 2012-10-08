@@ -1,0 +1,13 @@
+{
+    "type": "cssresource",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "url": "ux/grid/gridPrinterCss/print.css"
+    },
+    "id": "ExtBox1-ext-gen4963",
+    "designerId": "515ea5f5-8a1a-4b5d-8879-949eef18bfeb"
+}

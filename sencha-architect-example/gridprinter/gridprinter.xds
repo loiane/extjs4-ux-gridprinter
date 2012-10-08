@@ -1,0 +1,91 @@
+{
+    "name": "gridprinter",
+    "settings": {
+        "urlPrefix": "",
+        "spacesToIndent": 4,
+        "exportPath": "",
+        "lineEnding": "LF",
+        "genTimestamps": false,
+        "cacheBust": false
+    },
+    "xdsVersion": "2.1.0",
+    "xdsBuild": 640,
+    "schemaVersion": 1,
+    "upgradeVersion": 210000000498,
+    "framework": "ext41",
+    "topInstanceFileMap": {
+        "de1a510f-004e-4bb0-af59-b82194457740": {
+            "paths": [
+                "metadata/resource/Library"
+            ],
+            "className": "Library"
+        },
+        "16fde764-c0b6-42e0-af93-eb327b41cd3c": {
+            "paths": [
+                "metadata/resource/css"
+            ],
+            "className": "css"
+        },
+        "515ea5f5-8a1a-4b5d-8879-949eef18bfeb": {
+            "paths": [
+                "metadata/resource/css1"
+            ],
+            "className": "css1"
+        },
+        "35cd986b-5e73-4e08-9808-52aec5aeeeaf": {
+            "paths": [
+                "metadata/view/CompanyGrid",
+                "app/view/override/CompanyGrid.js",
+                "app/view/CompanyGrid.js",
+                "app/view/Viewport.js"
+            ],
+            "className": "CompanyGrid"
+        },
+        "b84135e4-f890-45ae-af24-d550352279ed": {
+            "paths": [
+                "metadata/model/Company",
+                "app/model/override/Company.js",
+                "app/model/Company.js"
+            ],
+            "className": "Company"
+        },
+        "ee69434a-8c98-4586-81f1-5107d0a413a0": {
+            "paths": [
+                "metadata/store/Companies",
+                "app/store/override/Companies.js",
+                "app/store/Companies.js"
+            ],
+            "className": "Companies"
+        },
+        "7baa9d14-bb0f-4f9b-bad1-8ea0e004d83d": {
+            "paths": [
+                "metadata/controller/Company",
+                "app/controller/override/Company.js",
+                "app/controller/Company.js"
+            ],
+            "className": "Company"
+        }
+    },
+    "viewOrderMap": {
+        "view": [
+            "35cd986b-5e73-4e08-9808-52aec5aeeeaf"
+        ],
+        "store": [
+            "ee69434a-8c98-4586-81f1-5107d0a413a0"
+        ],
+        "controller": [
+            "7baa9d14-bb0f-4f9b-bad1-8ea0e004d83d"
+        ],
+        "model": [
+            "b84135e4-f890-45ae-af24-d550352279ed"
+        ],
+        "resource": [
+            "de1a510f-004e-4bb0-af59-b82194457740",
+            "16fde764-c0b6-42e0-af93-eb327b41cd3c",
+            "515ea5f5-8a1a-4b5d-8879-949eef18bfeb"
+        ],
+        "app": [
+            "application"
+        ]
+    }
+}
