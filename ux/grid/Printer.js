@@ -44,8 +44,12 @@
  * Modified by Joshua Bradley - 2012-06-01
  * 
  * Modified by Loiane Groner - 2012-09-08
-	* 
+ * 
  * Modified by Loiane Groner - 2012-09-24
+ *
+ * Modified by Loiane Groner - 2012-10-17
+ * FelipeBR contribution
+ * Fixed: support for column name that cotains numbers
  *
  */
 Ext.define("Ext.ux.grid.Printer", {
@@ -86,7 +90,9 @@ Ext.define("Ext.ux.grid.Printer", {
                              */
                             var meta = {item: '', tdAttr: '', style: ''};
                             value = column.renderer ? column.renderer.call(grid, value, meta, item, row, col, grid.store, grid.view) : value;
-                            convertedData[Ext.String.createVarName(column.text)] = value;
+							var varName = Ext.String.createVarName(column.dataIndex);
+                            convertedData[varName] = value;
+							
                         } else if (column && column.xtype === 'rownumberer'){
 							convertedData['Row'] = row;
 						}
@@ -251,7 +257,7 @@ Ext.define("Ext.ux.grid.Printer", {
          */
         bodyTpl: [
             '<tpl for=".">',
-                '<td>\{{[Ext.String.createVarName(values.text)]}\}</td>',
+                '<td>\{{[Ext.String.createVarName(values.dataIndex)]}\}</td>',
             '</tpl>'
         ]
     }
