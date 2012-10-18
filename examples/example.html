@@ -144,7 +144,6 @@
 	        height: 350,
 	        width: 600,
 	        title: 'Array Grid with Print Option',
-	        renderTo: Ext.getBody(),
 	        tbar: [{
 	            text: 'Print',
 	            iconCls: 'icon-print',
@@ -183,6 +182,44 @@
 	            }
 	        }]
 	    });
+		
+		
+		////////////////////////////////////////////////////////////////////////////////////////
+	    // Grid 3
+	    ////////////////////////////////////////////////////////////////////////////////////////
+		Ext.create('Ext.data.Store', {
+		    storeId:'employeeStore',
+		    fields:['firstname', 'lastname', 'seniority', 'department'],
+		    groupField: 'department',
+		    data:[
+		        { firstname: "Michael", lastname: "Scott",   seniority: 7, department: "Management" },
+		        { firstname: "Dwight",  lastname: "Schrute", seniority: 2, department: "Sales" },
+		        { firstname: "Jim",     lastname: "Halpert", seniority: 3, department: "Sales" },
+		        { firstname: "Kevin",   lastname: "Malone",  seniority: 4, department: "Accounting" },
+		        { firstname: "Angela",  lastname: "Martin",  seniority: 5, department: "Accounting" }
+		    ]
+		});
+
+		var grid3 = Ext.create('Ext.grid.Panel', {
+		    title: 'Column Template Demo',
+		    store: Ext.data.StoreManager.lookup('employeeStore'),
+		    columns: [
+		        { text: 'Full Name',       xtype: 'templatecolumn', tpl: '{firstname} {lastname}', flex:1 },
+		        { text: 'Department (Yrs)', xtype: 'templatecolumn', tpl: '{department} ({seniority})' }
+		    ],
+		    height: 200,
+		    width: 300,
+		    renderTo: Ext.getBody(),
+			tbar: [{
+	            text: 'Print',
+	            iconCls: 'icon-print',
+	            handler : function(){
+	            	Ext.ux.grid.Printer.printAutomatically = false;
+	            	Ext.ux.grid.Printer.print(grid3);
+	            }
+	        }]
+		});
+		
 	});
 	</script>
 </head>

@@ -84,7 +84,9 @@ Ext.define("Ext.ux.grid.Printer", {
                     var value = item.data[key];
 
                     Ext.each(columns, function(column, col) {
+						
                         if (column && column.dataIndex == key) {
+
                             /*
                              * TODO: add the meta to template
                              */
@@ -94,8 +96,18 @@ Ext.define("Ext.ux.grid.Printer", {
                             convertedData[varName] = value;
 							
                         } else if (column && column.xtype === 'rownumberer'){
-							convertedData['Row'] = row;
-						}
+							
+							var varName = Ext.String.createVarName(column.id);
+                            convertedData[varName] = (row + 1);
+							
+						} else if (column && column.xtype === 'templatecolumn'){
+							
+							value = column.tpl ? column.tpl.apply(item.data) : value;
+							
+							var varName = Ext.String.createVarName(column.id);
+                            convertedData[varName] = value;
+							
+						} 
                     }, this);
                 }
 
@@ -110,7 +122,9 @@ Ext.define("Ext.ux.grid.Printer", {
                 } else	if (column && column.xtype === 'rownumberer'){
 					column.text = 'Row';
 					clearColumns.push(column);
-				}
+				} else if (column && column.xtype === 'templatecolumn'){
+					clearColumns.push(column);
+				}	
             });
             columns = clearColumns;
             
@@ -123,6 +137,7 @@ Ext.define("Ext.ux.grid.Printer", {
             //use the headerTpl and bodyTpl markups to create the main XTemplate below
             var headings = Ext.create('Ext.XTemplate', this.headerTpl).apply(columns);
             var body     = Ext.create('Ext.XTemplate', this.bodyTpl).apply(columns);
+			
             var pluginsBody = '',
                 pluginsBodyMarkup = [];
             
@@ -257,7 +272,11 @@ Ext.define("Ext.ux.grid.Printer", {
          */
         bodyTpl: [
             '<tpl for=".">',
-                '<td>\{{[Ext.String.createVarName(values.dataIndex)]}\}</td>',
+				'<tpl if="values.dataIndex">',
+                	'<td>\{{[Ext.String.createVarName(values.dataIndex)]}\}</td>',
+				'<tpl else>',
+					'<td>\{{[Ext.String.createVarName(values.id)]}\}</td>',	
+				'</tpl>',	
             '</tpl>'
         ]
     }
