@@ -48,8 +48,8 @@
  * Modified by Loiane Groner - 2012-09-24
  *
  * Modified by Loiane Groner - 2012-10-17
- * FelipeBR contribution
- * Fixed: support for column name that cotains numbers
+ * FelipeBR contribution: Fixed: support for column name that cotains numbers
+ * Fixed: added support for template columns
  *
  */
 Ext.define("Ext.ux.grid.Printer", {
