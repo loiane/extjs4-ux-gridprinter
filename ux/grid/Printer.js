@@ -51,6 +51,10 @@
  * FelipeBR contribution: Fixed: support for column name that cotains numbers
  * Fixed: added support for template columns
  *
+ * Modified by Loiane Groner - 2013-Feb-26
+ * Fixed: added support for row expander plugin
+ * Tested using Ext JS 4.1.2
+ *
  */
 Ext.define("Ext.ux.grid.Printer", {
     
@@ -82,9 +86,10 @@ Ext.define("Ext.ux.grid.Printer", {
                 //apply renderers from column model
                 for (var key in item.data) {
                     var value = item.data[key];
+                    var found = false;
 
                     Ext.each(columns, function(column, col) {
-						
+                        
                         if (column && column.dataIndex == key) {
 
                             /*
@@ -92,23 +97,31 @@ Ext.define("Ext.ux.grid.Printer", {
                              */
                             var meta = {item: '', tdAttr: '', style: ''};
                             value = column.renderer ? column.renderer.call(grid, value, meta, item, row, col, grid.store, grid.view) : value;
-							var varName = Ext.String.createVarName(column.dataIndex);
+                            var varName = Ext.String.createVarName(column.dataIndex);
                             convertedData[varName] = value;
-							
+                            found = true;
+                            
                         } else if (column && column.xtype === 'rownumberer'){
-							
-							var varName = Ext.String.createVarName(column.id);
+                            
+                            var varName = Ext.String.createVarName(column.id);
                             convertedData[varName] = (row + 1);
-							
-						} else if (column && column.xtype === 'templatecolumn'){
-							
-							value = column.tpl ? column.tpl.apply(item.data) : value;
-							
-							var varName = Ext.String.createVarName(column.id);
+                            found = true;
+                            
+                        } else if (column && column.xtype === 'templatecolumn'){
+                            
+                            value = column.tpl ? column.tpl.apply(item.data) : value;
+                            
+                            var varName = Ext.String.createVarName(column.id);
                             convertedData[varName] = value;
-							
-						} 
+                            found = true;
+                            
+                        } 
                     }, this);
+
+                    if (!found) { // model field not used on Grid Column, can be used on RowExpander
+                        var varName = Ext.String.createVarName(key);
+                        convertedData[varName] = value;
+                    }
                 }
 
                 data.push(convertedData);
@@ -119,12 +132,12 @@ Ext.define("Ext.ux.grid.Printer", {
             Ext.each(columns, function (column) {
                 if ((column) && (!Ext.isEmpty(column.dataIndex) && !column.hidden)) {
                     clearColumns.push(column);
-                } else	if (column && column.xtype === 'rownumberer'){
-					column.text = 'Row';
-					clearColumns.push(column);
-				} else if (column && column.xtype === 'templatecolumn'){
-					clearColumns.push(column);
-				}	
+                } else  if (column && column.xtype === 'rownumberer'){
+                    column.text = 'Row';
+                    clearColumns.push(column);
+                } else if (column && column.xtype === 'templatecolumn'){
+                    clearColumns.push(column);
+                }   
             });
             columns = clearColumns;
             
@@ -137,14 +150,14 @@ Ext.define("Ext.ux.grid.Printer", {
             //use the headerTpl and bodyTpl markups to create the main XTemplate below
             var headings = Ext.create('Ext.XTemplate', this.headerTpl).apply(columns);
             var body     = Ext.create('Ext.XTemplate', this.bodyTpl).apply(columns);
-			
+            
             var pluginsBody = '',
                 pluginsBodyMarkup = [];
             
             //add relevant plugins
             Ext.each(grid.plugins, function(p) {
                 if (p.ptype == 'rowexpander') {
-                    pluginsBody += p.rowBodyTpl.join('');
+                    pluginsBody += p.rowBodyTpl.html;
                 }
             });
             
@@ -272,11 +285,11 @@ Ext.define("Ext.ux.grid.Printer", {
          */
         bodyTpl: [
             '<tpl for=".">',
-				'<tpl if="values.dataIndex">',
-                	'<td>\{{[Ext.String.createVarName(values.dataIndex)]}\}</td>',
-				'<tpl else>',
-					'<td>\{{[Ext.String.createVarName(values.id)]}\}</td>',	
-				'</tpl>',	
+                '<tpl if="values.dataIndex">',
+                    '<td>\{{[Ext.String.createVarName(values.dataIndex)]}\}</td>',
+                '<tpl else>',
+                    '<td>\{{[Ext.String.createVarName(values.id)]}\}</td>', 
+                '</tpl>',   
             '</tpl>'
         ]
     }
