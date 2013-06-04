@@ -169,6 +169,8 @@ Ext.define("Ext.ux.grid.Printer", {
                 ];
             }
             
+            var title = grid.title || this.defaultGridTitle;
+
             //Here because inline styles using CSS, the browser did not show the correct formatting of the data the first time that loaded
             var htmlMarkup = [
                 '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
@@ -176,7 +178,7 @@ Ext.define("Ext.ux.grid.Printer", {
                   '<head>',
                     '<meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />',
                     '<link href="' + this.stylesheetPath + '" rel="stylesheet" type="text/css" />',
-                    '<title>' + grid.title + '</title>',
+                    '<title>' + title + '</title>',
                   '</head>',
                   '<body class="' + Ext.baseCSSPrefix + 'ux-grid-printer-body">',
                   '<div class="' + Ext.baseCSSPrefix + 'ux-grid-printer-noprint ' + Ext.baseCSSPrefix + 'ux-grid-printer-links">',
@@ -253,6 +255,14 @@ Ext.define("Ext.ux.grid.Printer", {
          * (defaults to empty)
          */
         mainTitle: '',
+        
+                 /**
+         * @property defaultGridTitle
+         * @type String
+         * Title to be used if grid to be printed
+         * has no title attribute set.
+         */
+        defaultGridTitle: 'Print View',
         
         /**
          * Text show on print link
