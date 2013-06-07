@@ -95,3 +95,8 @@ html.x-ux-grid-printer, .x-ux-grid-printer img,.x-ux-grid-printer body {
         display: none;
     }
 }
+.group-header {
+    border-bottom : 2px solid black;
+    font-size     : 14px;
+}
+
