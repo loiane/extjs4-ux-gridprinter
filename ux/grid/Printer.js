@@ -269,7 +269,6 @@ Ext.define("Ext.ux.grid.Printer", {
         generateBody : function( grid, columns, feature ) {
 
             var groups   = grid.store.getGroups();
-            var groupers = grid.store.groupers;
             var fields   = grid.store.getProxy().getModel().getFields();
             var hideGroupField = true;
             var groupField;
@@ -293,11 +292,16 @@ Ext.define("Ext.ux.grid.Printer", {
                     fields = fields.filter( removeGroupField );
                 }
 
+                // Use group header template for the header.
+                var html = feature.groupHeaderTpl.html || '';
+
                 var bodyTpl = [
                     '<tpl for=".">',
                         '<tr class="group-header">',
-                            '<td colspan="{[this.colSpan]}"> {[this.headerPrefix]}{name} &nbsp; {[this.postfixWithParens ? "(" : ""]} {[this.childCount(values.children)]}  {[this.childCount(values.children) > 1 ? this.headerPostfixPlural : this.headerPostfixSingular ]}  {[this.postfixWithParens ? ")" : ""]} </td>',
-                        ' </tr>', 
+                            '<td colspan="{[this.colSpan]}">',
+                              html,  // This is the group header!
+                            '</td>',
+                        '</tr>', 
                         '<tpl for="children">',
                             '<tr>',
                                 '<tpl for="this.fields">',
@@ -311,11 +315,6 @@ Ext.define("Ext.ux.grid.Printer", {
                     '</tpl>',
                     {
                         // XTemplate configuration:
-                        hideGroupField        : hideGroupField,
-                        headerPrefix          : this.groupHeaderPrefix,
-                        headerPostfixSingular : this.groupHeaderPostfixSingular,
-                        headerPostfixPlural   : this.groupHeaderPostfixPlural,
-                        postfixWithParens     : false,
                         fields                : fields,
                         colSpan               : fields.length - 1,
                         // XTemplate member functions:
@@ -383,26 +382,6 @@ Ext.define("Ext.ux.grid.Printer", {
          */
         closeLinkText: 'Close',
         
-        /**
-         * Text shown as prefix to group header text.
-         * @type String
-         */
-        groupHeaderPrefix : '',
-
-        /**
-         * Text shown as postfix to group header text,
-         * if there is only one child element for this group.
-         * @type String
-         */
-        groupHeaderPostfixSingular : '',
-
-        /**
-         * Text shown as postfix to group header text,
-         * if there are multiple child elements for this group.
-         * @type String
-         */
-        groupHeaderPostfixPlural : '',
-
         /**
          * @property headerTpl
          * @type {Object/Array} values
