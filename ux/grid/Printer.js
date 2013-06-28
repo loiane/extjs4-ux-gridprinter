@@ -292,11 +292,16 @@ Ext.define("Ext.ux.grid.Printer", {
                     fields = fields.filter( removeGroupField );
                 }
 
+                // Use group header template for the header.
+                var html = feature.groupHeaderTpl.html || '';
+
                 var bodyTpl = [
                     '<tpl for=".">',
                         '<tr class="group-header">',
-                            '<td colspan="{[this.colSpan]}"> {[this.headerPrefix]}{name} &nbsp; {[this.postfixWithParens ? "(" : ""]} {[this.childCount(values.children)]}  {[this.childCount(values.children) > 1 ? this.headerPostfixPlural : this.headerPostfixSingular ]}  {[this.postfixWithParens ? ")" : ""]} </td>',
-                        ' </tr>', 
+                            '<td colspan="{[this.colSpan]}">',
+                              html,  // This is the group header!
+                            '</td>',
+                        '</tr>', 
                         '<tpl for="children">',
                             '<tr>',
                                 '<tpl for="this.fields">',
