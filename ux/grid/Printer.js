@@ -212,7 +212,7 @@ Ext.define("Ext.ux.grid.Printer", {
                               body,
                            '</tr>',
                            pluginsBodyMarkup.join(''),
-                           '{% if (this.isGrouped && xindex > 1) break; %}',
+                           '{% if (this.isGrouped && xindex > 0) break; %}',
                         '</tpl>',
                     '</table>',
                   '</body>',
