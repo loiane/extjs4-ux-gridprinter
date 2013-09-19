@@ -45,16 +45,21 @@
  * 
  * Modified by Loiane Groner - 2012-09-08
  * 
- * Modified by Loiane Groner - 2012-09-24
+ * Modified by Loiane Groner - 2012-09-24 
  *
  * Modified by Loiane Groner - 2012-10-17
- * FelipeBR contribution: Fixed: support for column name that cotains numbers
+ * FelipeBR contribution: Fixed: support for column name that contains numbers
  * Fixed: added support for template columns
  *
  * Modified by Loiane Groner - 2013-Feb-26
  * Fixed: added support for row expander plugin
  * Tested using Ext JS 4.1.2
  *
+ * Modified by Steven Ervin - 2013-Sep-18
+ * Added support for summary and groupingsummary features
+ * Aligned columns according to grid column's alignment setting.
+ * Updated to use columnManager to recognize grid reconfiguration
+ * changes under 4.2.1.
  */
 Ext.define("Ext.ux.grid.Printer", {
     
@@ -66,23 +71,35 @@ Ext.define("Ext.ux.grid.Printer", {
          * @param {Ext.grid.Panel} grid The grid to print
          */
         print: function(grid, featureId) {
+        	
+        	//featureId is no longer needed and is ignored 
+        	
             // We generate an XTemplate here by using 2 intermediary
             // XTemplates - one to create the header, the other
             // to create the body (see the escaped {} below)
-            var columns = [];
             var isGrouped = grid.store.isGrouped();
             if ( isGrouped ) {
-                var feature = this.getFeature( grid, featureId );
+                //var feature = this.getFeature( grid, featureId );
+                var feature = this.getFeature( grid, 'grouping' );
                 var groupField = feature.getGroupField();
             }
-            //account for grouped columns
-            Ext.each(grid.columns, function(c) {
-                if(c.items.length > 0) {
-                    columns = columns.concat(c.items.items);
-                } else {
-                    columns.push(c);
-                }
-            });
+            if (grid.columnManager)
+            {
+            	// use the column manager to get the columns.
+                var columns = grid.columnManager.getColumns(); // Not supported in ExtJS-4.1.x
+            }
+            else
+            {
+                //account for grouped columns
+                var columns = [];
+                Ext.each(grid.columns, function(c) {
+                    if(c.items.length > 0) {
+                        columns = columns.concat(c.items.items);
+                    } else {
+                        columns.push(c);
+                    }
+                });
+            }
 
             //build a usable array of store data for the XTemplate
             var data = [];
@@ -187,6 +204,7 @@ Ext.define("Ext.ux.grid.Printer", {
             }
             
             var title = grid.title || this.defaultGridTitle;
+            var summaryFeature = this.getFeature(grid, 'summary');
 
             //Here because inline styles using CSS, the browser did not show the correct formatting of the data the first time that loaded
             var htmlMarkup = [
@@ -214,11 +232,126 @@ Ext.define("Ext.ux.grid.Printer", {
                            pluginsBodyMarkup.join(''),
                            '{% if (this.isGrouped && xindex > 0) break; %}',
                         '</tpl>',
+                        '<tpl if="this.hasSummary">',
+                            '<tr>',
+                        	'<tpl for="this.columns">',
+                        		'<td style="text-align: {align}">',
+                        			'{[ this.renderSummary(values, xindex) ]}',
+                        		'</td>',
+                        	'</tpl>',
+                        	'</tr>',
+                        '</tpl>',
                     '</table>',
                   '</body>',
                 '</html>',
                 {
-                    isGrouped : isGrouped
+                    isGrouped              : isGrouped,
+                    grid                   : grid,
+              		columns                : columns,
+                    hasSummary             : Ext.isObject(summaryFeature),
+              		feature                : summaryFeature,
+              		renderSummary: function(column, colIndex)
+              		{
+              			var value = this.getSummary(this.grid.store, column.summaryType, column.dataIndex, false);
+              			if (value === undefined)
+              				return "&nbsp;";
+              			if (column.summaryRenderer)
+                    		if (Ext.getVersion().isLessThan('4.2.0'))
+                    			return column.summaryRenderer.call(column, value, this.getSummaryObject(column.align), column.dataIndex);
+                    		else
+                    			return column.summaryRenderer.call(this.grid, 
+                    					                           value, 
+                    					                           this.getSummaryObject42(column, colIndex), 
+                    					                           this.getSummaryRecord42(),
+                    					                           -1,
+                    					                           colIndex,
+                    					                           this.grid.store,
+                    					                           this.grid.view);                      			
+              			else
+              				return value;
+              		},
+              		getSummaryObject: function(align)
+                    {      
+              			var summaryValues = {};
+                   		for (var i = 0; i < columns.length; i++)
+                   		{
+                   			var valueObject = this.getSummary(this.grid.store, this.columns[i].summaryType, this.columns[i].dataIndex, false);
+                   			if (valueObject === undefined)
+                   				continue; // Do nothing
+                   			else
+                   				summaryValues[columns[i].id] = valueObject;
+                   		}
+                   		summaryValues['style'] = "text-align:" + align + ';';
+                   		return summaryValues;
+                   },
+                   getSummaryRecord42: function()
+                   {
+                   		var rcd = Ext.create(this.grid.store.model);
+                   		for (var i = 0; i < this.columns.length; i++)
+                   		{
+                   			var	valueObject = this.getSummary(this.grid.store, this.columns[i].summaryType, this.columns[i].dataIndex, false);
+                   			if (valueObject === undefined)
+                   				continue; // Do nothing
+                   			else
+                   				rcd.set(this.columns[i].dataIndex, valueObject);
+                   		}
+                   		return rcd;
+                   },
+                   getSummaryObject42: function(column, colIndex)
+                   {
+                   		return { align : column.align,
+                   			     cellIndex: colIndex,
+                   			     'column': column,
+                   			     classes: [],
+                   			     innerCls: '',
+                   			     record : this.getSummaryRecord42(),
+                   			     recordIndex: -1,
+                   			     style : '',
+                   			     tdAttr : '',
+                   			     tdCls : '',
+                   			     unselectableAttr : 'unselectable="on"',
+                   			     value : '&#160;'
+                   			   };
+                   },
+                   // Use the getSummary from Ext 4.1.3.  This function for 4.2.1 has been changed without updating the documentation
+                   // In 4.2.1, group is a group object from the store (specifically grid.store.groups[i].items).
+                   /**
+                    * Get the summary data for a field.
+                    * @private
+                    * @param {Ext.data.Store} store The store to get the data from
+                    * @param {String/Function} type The type of aggregation. If a function is specified it will
+                    * be passed to the stores aggregate function.
+                    * @param {String} field The field to aggregate on
+                    * @param {Boolean} group True to aggregate in grouped mode 
+                    * @return {Number/String/Object} See the return type for the store functions.
+                    */
+                   getSummary: function(store, type, field, group)
+                   {
+                       if (type) 
+                       {
+                           if (Ext.isFunction(type)) 
+                           {
+                               return store.aggregate(type, null, group, [field]);
+                           }
+
+                           switch (type) 
+                           {
+                               case 'count':
+                                   return store.count(group);
+                               case 'min':
+                                   return store.min(field, group);
+                               case 'max':
+                                   return store.max(field, group);
+                               case 'sum':
+                                   return store.sum(field, group);
+                               case 'average':
+                                   return store.average(field, group);
+                               default:
+                                   return group ? {} : '';
+                                   
+                           }
+                       }
+                   }
                 }
             ];
 
@@ -246,24 +379,43 @@ Ext.define("Ext.ux.grid.Printer", {
             }
         },
 
-        getFeature : function( grid, featureId ) {
-            var feature;
-            var view     = grid.getView();
-            if ( featureId ) {
-                feature = view.getFeature( featureId );
-            }
-            else {
-                var features = view.features;
-                if ( features.length > 1 ) {
-                    alert( "More than one feature requires to pass " +
-                           "featureId as parameter to 'print'." );
-                    return;
-                }
-                else {
-                    feature = features[0];
-                }
-            }
-            return feature;
+//        getFeature : function( grid, featureId ) {
+//            var feature;
+//            var view     = grid.getView();
+//            if ( featureId ) {
+//                feature = view.getFeature( featureId );
+//            }
+//            else {
+//                var features = view.features;
+//                if ( features.length > 1 ) {
+//                    alert( "More than one feature requires to pass " +
+//                           "featureId as parameter to 'print'." );
+//                    return;
+//                }
+//                else {
+//                    feature = features[0];
+//                }
+//            }
+//            return feature;
+//        },
+        
+        getFeature : function( grid, featureFType) {
+        	var view = grid.getView();
+        	var features = view.features;
+        	if (features)
+        		for (var i = 0; i <features.length; i++)
+        		{
+        			if (featureFType == 'grouping')
+        				if (features[i].ftype == 'grouping' || features[i].ftype == 'groupingsummary')
+        					return features[i];
+        			if (featureFType == 'groupingsummary')
+        				if (features[i].ftype == 'groupingsummary')
+        					return features[i];        				
+        			if (featureFType == 'summary')
+        				if (features[i].ftype == 'summary')
+        					return features[i];        				
+        		}
+        	return undefined;
         },
 
         generateBody : function( grid, columns, feature ) {
@@ -273,6 +425,7 @@ Ext.define("Ext.ux.grid.Printer", {
             var hideGroupField = true;
             var groupField;
             var body;
+            var groupingSummaryFeature = this.getFeature(grid, 'groupingsummary');
 
             if ( grid.store.isGrouped() ) {
                 hideGroupField = feature.hideGroupedHeader;  // bool
@@ -281,7 +434,7 @@ Ext.define("Ext.ux.grid.Printer", {
                 if ( !feature || !fields || !groupField ) {
                     return;
                 }
-                
+                    
                 if ( hideGroupField ) {
                     var removeGroupField = function( item ) {
                         return ( item.name != groupField );
@@ -293,41 +446,178 @@ Ext.define("Ext.ux.grid.Printer", {
                 }
 
                 // Use group header template for the header.
-                var html = feature.groupHeaderTpl.html || '';
+              var html = feature.groupHeaderTpl.html || '';
 
                 var bodyTpl = [
                     '<tpl for=".">',
                         '<tr class="group-header">',
                             '<td colspan="{[this.colSpan]}">',
                               html,  // This is the group header!
+                              '{[ this.setGroupName(values.name) ]}',
                             '</td>',
                         '</tr>', 
                         '<tpl for="children">',
-                            '<tr>',
-                                '<tpl for="this.fields">',
-                                    '{% if (values.name==="id") continue; %}',
-                                    '<td>',
-                                      '{[ parent.get(values.name) ]}',
+                            '<tr class="{[xindex % 2 === 0 ? "even" : "odd"]}">',
+                                '<tpl for="this.columns">',
+                                    '<td style="text-align: {align}">',
+                                       '{[ this.renderColumn(values, parent.get(values.dataIndex), parent, xindex) ]}',
                                     '</td>',
                                 '</tpl>',
                             '</tr>',
                         '</tpl>',
+                        '<tpl if="this.hasSummary">',
+                           '<tr>',
+                           '<tpl for="this.columns">',
+                              '<td style="text-align: {align}">',
+                                 '{[ this.renderSummary(values, xindex) ]}',
+                              '</td>',
+                           '</tpl>',
+                           '</tr>',
+                        '</tpl>',
                     '</tpl>',
                     {
                         // XTemplate configuration:
-                        fields                : fields,
-                        colSpan               : fields.length - 1,
+                        columns               : columns,
+                        colSpan               : columns.length - 1,
+                        grid                  : grid,
+                        groupName             : "",
+                        hasSummary            : Ext.isObject(groupingSummaryFeature) && groupingSummaryFeature.showSummaryRow,
+                        summaryFeature        : groupingSummaryFeature,
                         // XTemplate member functions:
                         childCount : function(c) {
                             return c.length;
+                        },
+                        renderColumn: function(column, value, rcd, col)
+                        {
+                        	var meta = {item: '', tdAttr: '', style: ''};
+                        	if (column.renderer)
+                        		return column.renderer.call(this.grid, value, meta, rcd, -1, col - 1, this.grid.store, this.grid.view);
+                        	else
+                        		return value;
+                        },
+                        renderSummary: function(column, group, colIndex)
+                        {                        	
+                        	var value = this.getSummary(this.grid.store, column.summaryType, column.dataIndex, this.grid.store.isGrouped());
+                        	
+                        	if (value === undefined)
+                        		return "&nbsp;";
+                        	else if (Ext.isObject(value))
+                        		value = value[this.groupName];
+                        	
+                        	if (column.summaryRenderer)
+                        		if (Ext.getVersion().isLessThan('4.2.0'))
+                        			return column.summaryRenderer.call(column, value, this.getSummaryObject(column.align), column.dataIndex);
+                        		else
+                        			return column.summaryRenderer.call(this.grid, 
+                        					                           value, 
+                        					                           this.getSummaryObject42(column, colIndex), 
+                        					                           this.getSummaryRecord42(),
+                        					                           -1,
+                        					                           colIndex,
+                        					                           this.grid.store,
+                        					                           this.grid.view);                      			
+                        	else
+                        		return value;
+                        },
+                        setGroupName: function(name)
+                        {
+                        	this.groupName = name;
+                        	return "";
+                        },
+                        getSummaryObject: function(align)
+                        {      
+                        	var summaryValues = {};
+                        	for (var i = 0; i < this.columns.length; i++)
+                        	{
+                            	var	valueObject = this.getSummary(this.grid.store, this.columns[i].summaryType, this.columns[i].dataIndex, this.grid.store.isGrouped());
+                            	if (valueObject === undefined)
+                            		continue; // Do nothing
+                            	else if (Ext.isObject(valueObject))
+                            		summaryValues[columns[i].id] = valueObject[this.groupName];
+                            	else
+                            		summaryValues[columns[i].id] = valueObject;
+                            }
+                        	summaryValues['style'] = "text-align:" + align + ';';
+                        	return summaryValues;
+                        },
+                        getSummaryRecord42: function()
+                        {
+                        	var rcd = Ext.create(this.grid.store.model);
+                        	for (var i = 0; i < this.columns.length; i++)
+                        	{
+                        		var	valueObject = this.getSummary(this.grid.store, this.columns[i].summaryType, this.columns[i].dataIndex, this.grid.store.isGrouped());
+                        		if (valueObject === undefined)
+                        			continue; // Do nothing
+                        		else if (Ext.isObject(valueObject))
+                        			rcd.set(this.columns[i].dataIndex, valueObject[this.groupName]);
+                        		else
+                        			rcd.set(this.columns[i].dataIndex, valueObject);
+                        	}
+                        	return rcd;
+                        },
+                        getSummaryObject42: function(column, colIndex)
+                        {
+                        	return { align : column.align,
+                        			 cellIndex: colIndex,
+                        			 classes: [],
+                        			 innerCls: '',
+                        			 record : this.getSummaryRecord42(),
+                        			 recordIndex: -1,
+                        			 style : '',
+                        			 tdAttr : '',
+                        			 tdCls : '',
+                        			 unselectableAttr : 'unselectable="on"',
+                        			 value : '&#160;'
+                        		   };
+                        },
+                        // Use the getSummary from Ext 4.1.3.  This function for 4.2.1 has been changed without updating the documentation
+                        // In 4.2.1, group is a group object from the store (specifically grid.store.groups[i].items).
+                        /**
+                         * Get the summary data for a field.
+                         * @private
+                         * @param {Ext.data.Store} store The store to get the data from
+                         * @param {String/Function} type The type of aggregation. If a function is specified it will
+                         * be passed to the stores aggregate function.
+                         * @param {String} field The field to aggregate on
+                         * @param {Boolean} group True to aggregate in grouped mode 
+                         * @return {Number/String/Object} See the return type for the store functions.
+                         */
+                        getSummary: function(store, type, field, group)
+                        {
+                            if (type) 
+                            {
+                                if (Ext.isFunction(type)) 
+                                {
+                                    return store.aggregate(type, null, group, [field]);
+                                }
+
+                                switch (type) 
+                                {
+                                    case 'count':
+                                        return store.count(group);
+                                    case 'min':
+                                        return store.min(field, group);
+                                    case 'max':
+                                        return store.max(field, group);
+                                    case 'sum':
+                                        return store.sum(field, group);
+                                    case 'average':
+                                        return store.average(field, group);
+                                    default:
+                                        return group ? {} : '';
+                                        
+                                }
+                            }
                         }
                     }
                 ];
-                body = Ext.create('Ext.XTemplate', bodyTpl).apply(groups);
+                
+              body = Ext.create('Ext.XTemplate', bodyTpl).apply(groups);
             }
             else {
                 body = Ext.create('Ext.XTemplate', this.bodyTpl).apply(columns);
-            }
+            }            
+
             return body;
         },
 
@@ -389,7 +679,7 @@ Ext.define("Ext.ux.grid.Printer", {
          */
         headerTpl: [ 
             '<tpl for=".">',
-                '<th>{text}</th>',
+                '<th style="text-align: {align}">{text}</th>',
             '</tpl>'
         ],
 
@@ -402,9 +692,9 @@ Ext.define("Ext.ux.grid.Printer", {
         bodyTpl: [
             '<tpl for=".">',
                 '<tpl if="values.dataIndex">',
-                    '<td>\{{[Ext.String.createVarName(values.dataIndex)]}\}</td>',
+                    '<td style="text-align: {align}">\{{[Ext.String.createVarName(values.dataIndex)]}\}</td>',
                 '<tpl else>',
-                    '<td>\{{[Ext.String.createVarName(values.id)]}\}</td>', 
+                    '<td style="text-align: {align}">\{{[Ext.String.createVarName(values.id)]}\}</td>', 
                 '</tpl>',   
             '</tpl>'
         ]
