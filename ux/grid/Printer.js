@@ -181,7 +181,7 @@ Ext.define("Ext.ux.grid.Printer", {
                         {
                             clearColumns.push(column);
                         } else if ( column.xtype === 'rownumberer'){
-                            column.text = 'Row';
+                            if (!column.text) column.text = 'Row';
                             clearColumns.push(column);
                         } else if ( column.xtype === 'templatecolumn'){
                             clearColumns.push(column);
@@ -548,6 +548,13 @@ Ext.define("Ext.ux.grid.Printer", {
             {
                 hideGroupField = feature.hideGroupedHeader;  // bool
                 groupField = feature.getGroupField();
+                
+                var groupColumn;
+                Ext.each(grid.columns, function(col)
+               	{
+                	if (col.dataIndex == groupField)
+                		groupColumn = col;
+               	});
 
                 if ( !feature || !fields || !groupField ) {
                     return;
@@ -570,8 +577,7 @@ Ext.define("Ext.ux.grid.Printer", {
                     '<tpl for=".">',
                         '<tr class="group-header">',
                             '<td colspan="{[this.colSpan]}">',
-                              html,  // This is the group header!
-                              '{[ this.setGroupName(values.name) ]}',
+                              '{[ this.applyGroupTpl(values) ]}',
                             '</td>',
                         '</tr>', 
                         '<tpl for="children">',
@@ -592,9 +598,11 @@ Ext.define("Ext.ux.grid.Printer", {
                     {
                         // XTemplate configuration:
                         columns               : columns,
-                        colSpan               : columns.length - 1,
+                        groupColumn           : groupColumn,
+                        colSpan               : columns.length,
                         grid                  : grid,
                         groupName             : "",
+                        groupTpl              : feature.groupHeaderTpl,
                         hasSummary            : Ext.isObject(groupingSummaryFeature) && groupingSummaryFeature.showSummaryRow,
                         summaryFeature        : groupingSummaryFeature,
                         // XTemplate member functions:
@@ -693,10 +701,41 @@ Ext.define("Ext.ux.grid.Printer", {
 
                         	return '<td><div>' + value + '</div></td>';
                         },
-                        setGroupName: function(name)
+                        applyGroupTpl: function(rcd)
                         {
-                        	this.groupName = name;
-                        	return "";
+                        	// The only members in rcd are name and children
+                        	this.groupName = rcd.name;
+                        	rcd.groupField = this.grid.store.groupField;
+                        	
+                        	var meta = { 'align'        : '',
+                  			         'cellIndex'        : -1,
+                  			         'classes'          : [],
+                  			         'column'           : this.groupColumn,
+                  			         'innerCls'         : '',
+                  			         'record'           : rcd.children[0],
+                  			         'recordIndex'      : this.grid.store.indexOf(rcd.children[0]),
+                  			         'style'            : '',
+                  			         'tdAttr'           : '',
+                  			         'tdCls'            : '',
+                  			         'unselectableAttr' : 'unselectable="on"',
+                  			         'value'            : rcd.name
+                          		   };
+
+                        	if (this.groupColumn)
+                        		rcd.columnName = this.groupColumn.text;
+                        	else
+                        		rcd.columnName = this.groupField;
+
+                        	rcd.groupValue = rcd.name;
+
+                        	if (this.groupColumn && this.groupColumn.renderer)
+                        	{
+                        		rcd.renderedGroupValue = this.groupColumn.renderer.call(this.grid, rcd.name, meta, rcd.children[0], -1, -1, this.grid.store, this.grid.view);
+                        	}
+                        	else
+                        		rcd.renderedGroupValue = rcd.name;
+                        	rcd.rows = null;  // We don't support rcd.rows yet
+                            return this.groupTpl.apply(rcd); 
                         },
                         getSummaryObject: function(align)
                         {      
@@ -897,4 +936,3 @@ Ext.define("Ext.ux.grid.Printer", {
 
     }
 });
-
