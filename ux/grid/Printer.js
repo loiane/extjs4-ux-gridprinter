@@ -64,6 +64,7 @@
  * Modified by Steven Ervin - 2013-Oct-24
  * Added support for using the MetaData object to style the output.
  * Added support for Server generated summaries. 
+ * 
  */
 Ext.define("Ext.ux.grid.Printer", {
     
@@ -185,7 +186,9 @@ Ext.define("Ext.ux.grid.Printer", {
                             clearColumns.push(column);
                         } else if ( column.xtype === 'templatecolumn'){
                             clearColumns.push(column);
-                        } else if ( isGrouped && column.dataIndex !== groupField ){
+                        } else if ( isGrouped && 
+                                    column.dataIndex !== groupField
+                                    column.xtype !== 'actioncolumn'){
                             clearColumns.push(column);
                         }
                     }
