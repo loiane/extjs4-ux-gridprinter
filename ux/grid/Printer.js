@@ -63,7 +63,11 @@
  * 
  * Modified by Steven Ervin - 2013-Oct-24
  * Added support for using the MetaData object to style the output.
- * Added support for Server generated summaries. 
+ * Added support for Server generated summaries.
+ *
+ * Modified by Alexandr Arzamastsev - 2013-Nov-20
+ * Set printLinkText and closeLinkText as params
+ * Added param for page title.
  */
 Ext.define("Ext.ux.grid.Printer", {
     
@@ -220,7 +224,7 @@ Ext.define("Ext.ux.grid.Printer", {
                 ];
             }
             
-            var title = grid.title || this.defaultGridTitle;
+            var title = (grid.title) ? grid.title : this.pageTitle;
             var summaryFeature = this.getFeature(grid, 'summary');
 
             //Here because inline styles using CSS, the browser did not show the correct formatting of the data the first time that loaded
@@ -883,6 +887,14 @@ Ext.define("Ext.ux.grid.Printer", {
          */
         closeAutomaticallyAfterPrint: false,        
         
+		/**
+         * @property pageTitle
+         * @type String
+         * Title to be used on top of the table
+         * (defaults to empty)
+         */
+        pageTitle: 'Print View',
+				
         /**
          * @property mainTitle
          * @type String
@@ -890,23 +902,17 @@ Ext.define("Ext.ux.grid.Printer", {
          * (defaults to empty)
          */
         mainTitle: '',
-        
-        /**
-         * @property defaultGridTitle
-         * @type String
-         * Title to be used if grid to be printed
-         * has no title attribute set.
-         */
-        defaultGridTitle: 'Print View',
-        
-        /**
+
+         /**
          * Text show on print link
+		 * @property printLinkText
          * @type String
          */
         printLinkText: 'Print',
         
         /**
          * Text show on close link
+		 * @property closeLinkText
          * @type String
          */
         closeLinkText: 'Close',
