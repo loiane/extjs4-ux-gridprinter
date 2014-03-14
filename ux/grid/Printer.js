@@ -280,7 +280,7 @@ Ext.define("Ext.ux.grid.Printer", {
                                      'column'           : column,
                                      'innerCls'         : '',
                                      'record'           : rcd,
-                                     'recordIndex'      : grid.store.indexOf(rcd),
+                                     'recordIndex'      : grid.store.indexOf ? grid.store.indexOf(rcd) : undefined,
                                      'style'            : '',
                                      'tdAttr'           : '',
                                      'tdCls'            : '',
@@ -291,8 +291,13 @@ Ext.define("Ext.ux.grid.Printer", {
                     	{
                     		value = column.tpl ? column.tpl.apply(rcd.data) : value;
                     	}
-                    	else if (column.renderer)
-                    		value = column.renderer.call(this.grid, value, meta, rcd, -1, col - 1, this.grid.store, this.grid.view);
+                    	else if (column.renderer) {
+                            if (column instanceof Ext.tree.Column) {
+                                value = column.renderer.call(column, value, meta, rcd, -1, col - 1, this.grid.store, this.grid.view);
+                            } else {
+                                value = column.renderer.call(this.grid, value, meta, rcd, -1, col - 1, this.grid.store, this.grid.view);
+                            }
+                        }
 
                     	return this.getHtml(value, meta);
                     },
@@ -477,7 +482,16 @@ Ext.define("Ext.ux.grid.Printer", {
             ];
 
 //            var html = Ext.create('Ext.XTemplate', htmlMarkup).apply(data);
-            var records = grid.store.getRange();
+            var records;
+            if (grid.store instanceof Ext.data.TreeStore) {
+                records = [];
+                grid.store.getRootNode().cascadeBy(function(node) {
+                    if (!node.isVisible()) return;
+                    records.push(node);
+                }, this);
+            } else {
+                records = grid.store.getRange();
+            }
             var html = Ext.create('Ext.XTemplate', htmlMarkup).apply(records); 
 
             //open up a new printing window, write to it, print it and close
@@ -543,14 +557,18 @@ Ext.define("Ext.ux.grid.Printer", {
 
         generateBody : function( grid, columns, feature ) 
         {
-            var groups   = grid.store.getGroups();
+            var groups   = [];
             var fields   = grid.store.getProxy().getModel().getFields();
             var hideGroupField = true;
             var groupField;
             var body;
             var groupingSummaryFeature = this.getFeature(grid, 'groupingsummary');
 
-            if ( grid.store.isGrouped() && feature ) 
+            if (grid instanceof Ext.grid.Panel) {
+                groups = grid.store.getGroups();
+            }
+
+            if (groups.length && grid.store.isGrouped() && feature )
             {
                 hideGroupField = feature.hideGroupedHeader;  // bool
                 groupField = feature.getGroupField();
