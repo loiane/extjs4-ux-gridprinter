@@ -86,6 +86,10 @@ html.x-ux-grid-printer, .x-ux-grid-printer img,.x-ux-grid-printer body {
     border-color: #ededed;
 }
 
+.x-tree-elbow-img, .x-tree-elbow-line {
+    width: 10px;
+}
+
 @media print {
     .x-ux-grid-printer body {
         margin: 0;
