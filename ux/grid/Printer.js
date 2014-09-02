@@ -98,7 +98,9 @@ Ext.define("Ext.ux.grid.Printer", {
             if (grid.columnManager)
             {
             	// use the column manager to get the columns.
-                var columns = grid.columnManager.getColumns(); // Not supported in ExtJS-4.1.x
+               //var columns = grid.columnManager.getColumns(); // Not supported in ExtJS-4.1.x
+            	var columns = grid.view.headerCt.getVisibleGridColumns();
+
             }
             else
             {
@@ -218,7 +220,8 @@ Ext.define("Ext.ux.grid.Printer", {
                 }
             });
             
-            if (expanderTemplate) {
+            if (expanderTemplate) 
+            {
                 pluginsBodyMarkup = [
                     '<tr class="{[xindex % 2 === 0 ? "even" : "odd"]}"><td colspan="' + columns.length + '">',
                         '{[ this.applyTpl(values) ]}',
@@ -268,25 +271,26 @@ Ext.define("Ext.ux.grid.Printer", {
                 {
                     isGrouped              : isGrouped,
                     grid                   : grid,
-              	    columns                : columns,
+              	     columns                : columns,
                     hasSummary             : Ext.isObject(summaryFeature),
-              	    summaryFeature         : summaryFeature,
+              	     summaryFeature         : summaryFeature,
                     expanderTemplate       : expanderTemplate,
                     renderColumn: function(column, value, rcd, col)
                     {
                     	var meta = { 'align'            : column.align,
-                                     'cellIndex'        : col,
-                                     'classes'          : [],
-                                     'column'           : column,
-                                     'innerCls'         : '',
-                                     'record'           : rcd,
-                                     'recordIndex'      : grid.store.indexOf ? grid.store.indexOf(rcd) : undefined,
-                                     'style'            : '',
-                                     'tdAttr'           : '',
-                                     'tdCls'            : '',
-                                     'unselectableAttr' : 'unselectable="on"',
-                                     'value'            : value
-                           	       };
+                                  'cellIndex'        : col,
+                                  'classes'          : [],
+                                  'column'           : column,
+                                  'css'              : '',
+                                  'innerCls'         : '',
+                                  'record'           : rcd,
+                                  'recordIndex'      : grid.store.indexOf ? grid.store.indexOf(rcd) : undefined,
+                                  'style'            : '',
+                                  'tdAttr'           : '',
+                                  'tdCls'            : '',
+                                  'unselectableAttr' : 'unselectable="on"',
+                                  'value'            : value
+                           	  };
                     	if (column.xtype == 'templatecolumn')
                     	{
                     		value = column.tpl ? column.tpl.apply(rcd.data) : value;
@@ -403,18 +407,19 @@ Ext.define("Ext.ux.grid.Printer", {
                    },
                    getSummaryObject42: function(value, column, colIndex, rcd)
                    {
-                   		return { align : column.align,
-                   			     cellIndex: colIndex,
-                   			     'column': column,
-                   			     classes: [],
-                   			     innerCls: '',
-                   			     record : rcd,
-                   			     recordIndex: -1,
-                   			     style : '',
-                   			     tdAttr : '',
-                   			     tdCls : '',
-                   			     unselectableAttr : 'unselectable="on"',
-                   			     'value' : value
+                   		return { align            : column.align,
+                   			      cellIndex        : colIndex,
+                   			      'column'         : column,
+                   			      classes          : [],
+                   			      css              : '',
+                   			      innerCls         : '',
+                   			      record           : rcd,
+                   			      recordIndex      : -1,
+                   			      style            : '',
+                   			      tdAttr           : '',
+                   			      tdCls            : '',
+                   			      unselectableAttr : 'unselectable="on"',
+                   			      'value'          : value
                    			   };
                    },
                    // Use the getSummary from Ext 4.1.3.  This function for 4.2.1 has been changed without updating the documentation
@@ -460,21 +465,29 @@ Ext.define("Ext.ux.grid.Printer", {
                 	   if (value == undefined)
                    			value = '&nbsp;';
                    	
-                   		var html = '<td '; 
-                   		if (meta.tdCls)
-                   			html += 'class="' + meta.tdCls + '"';
-                   		if (meta.tdAttr)
-                   			html += ' ' + meta.tdAttr;
-                   		html += '><div ';
-                   		if (meta.innerCls)
-                   			html += 'class="' + meta.innerCls + '"';
-                   		html += ' style="text-align: ' + meta.align + ';';
-                   		if (meta.style)
-                   			html += meta.style;
-                   		html += '" ';
-                   		if (meta.unselectableAttr)
-                   			html += meta.unselectableAttr;
-                   		html += '>' + value + '</div></td>';
+                  	var html = '<td ';
+                  	var tdClasses = '';
+                  	if (meta.tdCls)
+                  		tdClasses = meta.tdCls;
+               		if (meta.css)
+                			if (tdClasses.length > 0)
+                				tdClasses += " " + meta.css;
+                			else
+                				tdClasses = meta.css;
+                		if (tdClasses.length > 0)
+                			html += 'class="' + tdClasses + '"';
+                  	if (meta.tdAttr)
+                  		html += ' ' + meta.tdAttr;
+                  	html += '><div ';
+                  	if (meta.innerCls)
+                  		html += 'class="' + meta.innerCls + '"';
+                  	html += ' style="text-align: ' + meta.align + ';';
+                  	if (meta.style)
+                  		html += meta.style;
+                  	html += '" ';
+                  	if (meta.unselectableAttr)
+                  		html += meta.unselectableAttr;
+                  	html += '>' + value + '</div></td>';
                    	
                    		return html;
                    }
@@ -486,8 +499,9 @@ Ext.define("Ext.ux.grid.Printer", {
             if (grid.store instanceof Ext.data.TreeStore) {
                 records = [];
                 grid.store.getRootNode().cascadeBy(function(node) {
-                    if (!node.isVisible()) return;
-                    records.push(node);
+               	 if (node.isRoot() && !grid.rootVisible) return;
+               	 if (!node.isVisible()) return;
+               	 records.push(node);
                 }, this);
             } else {
                 records = grid.store.getRange();
@@ -536,10 +550,19 @@ Ext.define("Ext.ux.grid.Printer", {
 //            return feature;
 //        },
         
-        getFeature : function( grid, featureFType) {
-        	var view = grid.getView();
-        	var features = view.features;
-        	if (features)
+        getFeature : function( grid, featureFType) 
+        {
+      	  var view = grid.getView();
+       
+      	  var features;
+      	  if (view.features)
+      		  features = view.features;
+      	  else if (view.featuresMC)
+      		  features = view.featuresMC.items;
+      	  else if (view.normalView.featuresMC)
+      		  features = view.normalView.featuresMC.items;
+      	  
+      	  if (features)
         		for (var i = 0; i <features.length; i++)
         		{
         			if (featureFType == 'grouping')
@@ -568,7 +591,9 @@ Ext.define("Ext.ux.grid.Printer", {
                 groups = grid.store.getGroups();
             }
 
-            if (groups.length && grid.store.isGrouped() && feature )
+            
+            //if (groups.length && grid.store.isGrouped() && feature )
+            if (grid.store.isGrouped() && groups && groups.length && feature )
             {
                 hideGroupField = feature.hideGroupedHeader;  // bool
                 groupField = feature.getGroupField();
@@ -596,6 +621,22 @@ Ext.define("Ext.ux.grid.Printer", {
 
                 // Use group header template for the header.
                 var html = feature.groupHeaderTpl.html || '';
+                
+                // #$%! ExtJS 5.x changed the output of getGroups().  It is now an Ext.util.GroupCollection object.
+                // We need to transform it back into the 4.x structure which our template expects.
+                if (Ext.getVersion().isGreaterThanOrEqual('5.0.0'))
+                {
+               	 var newGroups = [];
+               	 for (var i = 0; i < groups.getCount(); i++)
+               	 {
+               		 var groupObj = groups.getAt(i);
+               		 newGroups.push({
+               			 name: groupObj.getGroupKey(),
+               		    children: groupObj.getRange()
+               		 });
+               	 }
+               	 groups = newGroups;
+                }
 
                 var bodyTpl = [
                     '<tpl for=".">',
@@ -639,6 +680,7 @@ Ext.define("Ext.ux.grid.Printer", {
                        			         'cellIndex'        : col,
                        			         'classes'          : [],
                        			         'column'           : column,
+                       			         'css'              : '',
                        			         'innerCls'         : '',
                        			         'record'           : rcd,
                        			         'recordIndex'      : grid.store.indexOf(rcd),
@@ -655,12 +697,21 @@ Ext.define("Ext.ux.grid.Printer", {
                         },
                         getHtml: function(value, meta)
                         {
-                        	if (value == undefined || value == 0)
+                        	if (value == undefined)
                         		value = '&nbsp;';
                         	
                         	var html = '<td ';
+                        	var tdClasses = '';
                         	if (meta.tdCls)
-                        		html += 'class="' + meta.tdCls + '"';
+                        		//html += 'class="' + meta.tdCls + '"';
+                        		tdClasses = meta.tdCls;
+                     		if (meta.css)
+                      			if (tdClasses.length > 0)
+                      				tdClasses += " " + meta.css;
+                      			else
+                      				tdClasses = meta.css;
+                      		if (tdClasses.length > 0)
+                      			html += 'class="' + tdClasses + '"';
                         	if (meta.tdAttr)
                         		html += ' ' + meta.tdAttr;
                         	html += '><div ';
@@ -731,18 +782,19 @@ Ext.define("Ext.ux.grid.Printer", {
                         	this.groupName = rcd.name;
                         	rcd.groupField = this.grid.store.groupField;
                         	
-                        	var meta = { 'align'        : '',
-                  			         'cellIndex'        : -1,
-                  			         'classes'          : [],
-                  			         'column'           : this.groupColumn,
-                  			         'innerCls'         : '',
-                  			         'record'           : rcd.children[0],
-                  			         'recordIndex'      : this.grid.store.indexOf(rcd.children[0]),
-                  			         'style'            : '',
-                  			         'tdAttr'           : '',
-                  			         'tdCls'            : '',
-                  			         'unselectableAttr' : 'unselectable="on"',
-                  			         'value'            : rcd.name
+                        	var meta = { 'align'            : '',
+                  			             'cellIndex'        : -1,
+                  			             'classes'          : [],
+                  			             'column'           : this.groupColumn,
+                  			             'css'              : '',
+                  			             'innerCls'         : '',
+                  			             'record'           : rcd.children[0],
+                  			             'recordIndex'      : this.grid.store.indexOf(rcd.children[0]),
+                  			             'style'            : '',
+                  			             'tdAttr'           : '',
+                  			             'tdCls'            : '',
+                  			             'unselectableAttr' : 'unselectable="on"',
+                  			             'value'            : rcd.name
                           		   };
 
                         	if (this.groupColumn)
@@ -758,7 +810,7 @@ Ext.define("Ext.ux.grid.Printer", {
                         	}
                         	else
                         		rcd.renderedGroupValue = rcd.name;
-                        	rcd.rows = null;  // We don't support rcd.rows yet
+                        	//rcd.rows = null;  // We don't support rcd.rows yet
                             return this.groupTpl.apply(rcd); 
                         },
                         getSummaryObject: function(align)
@@ -794,18 +846,19 @@ Ext.define("Ext.ux.grid.Printer", {
                         },
                         getSummaryObject42: function(column, colIndex)
                         {
-                        	return { align : column.align,
-                        			 cellIndex: colIndex,
-                        			 classes: [],
-                        			 innerCls: '',
-                        			 record : this.getSummaryRecord42(),
-                        			 recordIndex: -1,
-                        			 style : '',
-                        			 tdAttr : '',
-                        			 tdCls : '',
-                        			 unselectableAttr : 'unselectable="on"',
-                        			 value : '&#160;'
-                        		   };
+                        	return { align            : column.align,
+                        			   cellIndex        : colIndex,
+                        			   classes          : [],
+                        			   css              : '',
+                        			   innerCls         : '',
+                        			   record           : this.getSummaryRecord42(),
+                        			   recordIndex      : -1,
+                        			   style            : '',
+                        			   tdAttr           : '',
+                        			   tdCls            : '',
+                        			   unselectableAttr : 'unselectable="on"',
+                        			   value            : '&#160;'
+                        		    };
                         },
                         // Use the getSummary from Ext 4.1.3.  This function for 4.2.1 has been changed without updating the documentation
                         // In 4.2.1, group is a group object from the store (specifically grid.store.groups[i].items).
