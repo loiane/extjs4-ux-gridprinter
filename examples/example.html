@@ -333,9 +333,67 @@
 
     });
 
+
+    ////////////////////////////////////////////////////////////////////////////////////////
+    // Grid 5
+    ////////////////////////////////////////////////////////////////////////////////////////
+    var treeStore = Ext.create('Ext.data.TreeStore', {
+        fields: ['a', 'b', 'c'],
+        root: {
+            a: 'a0',
+            b: 'b0',
+            c: 'c0',
+            expanded: true,
+            children: [
+                { a: "a1", b: "b2", c: "c3", leaf: true },
+                { a: "a2", b: "b2", c: "c2", expanded: true, children: [
+                    { a: "a2-1", b: "b2-1", c: "c2-1", leaf: true },
+                    { a: "a2-2", b: "b2-2", c: "c2-2", leaf: true}
+                ] },
+                { a: "a3", b: "b3", c: "c3", leaf: true }
+            ]
+        }
+
+    });
+
+    var grid5 = Ext.create('Ext.tree.Panel', {
+        xtype: 'treepanel',
+        viewConfig: {
+            stripeRows: true
+        },
+        bothCfgCopy: [],
+        title: 'Tree Grid',
+
+        store: treeStore,
+        width: 300,
+        height: 200,
+        renderTo: Ext.getBody(),
+        defaults: {
+            flex: 1
+        },
+        columns: [{
+            xtype: 'treecolumn',
+            text: 'A',
+            dataIndex: 'a'
+        }, {
+            text: 'B',
+            dataIndex: 'b'
+        }, {
+            text: 'C',
+            dataIndex: 'c'
+        }],
+        tbar: [{
+            text: 'Print',
+            iconCls: 'icon-print',
+            handler: function(btn) {
+                Ext.ux.grid.Printer.print(grid5);
+
+            }}]
+    });
 });
 	</script>
 </head>
+    <span id="grid1"></span>
 <body>
 </body>
 </html>
