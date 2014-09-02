@@ -68,6 +68,11 @@
  * Modified by Alexandr Arzamastsev - 2013-Nov-20
  * Set printLinkText and closeLinkText as params
  * Added param for page title.
+ * 
+ * Modified by Steve Ervin - 2014-Sep-02
+ * Added support of ExtJS 5.0.1 and fixed getFeature method.
+ * Fixed bug under 4.1.1.
+ * 
  */
 Ext.define("Ext.ux.grid.Printer", {
     
@@ -593,7 +598,7 @@ Ext.define("Ext.ux.grid.Printer", {
 
             
             //if (groups.length && grid.store.isGrouped() && feature )
-            if (grid.store.isGrouped() && groups && groups.length && feature )
+            if (grid.store.isGrouped && grid.store.isGrouped() && groups && groups.length && feature )
             {
                 hideGroupField = feature.hideGroupedHeader;  // bool
                 groupField = feature.getGroupField();
