@@ -3,14 +3,19 @@
     <title>Grid with GridPrinter feature</title>
 
 	<!-- Ext JS Files -->
-    <link rel="stylesheet" type="text/css" href="http://extjs.cachefly.net/ext-4.1.1-gpl/resources/css/ext-all-debug.css" />
-    <script type="text/javascript" src="http://extjs.cachefly.net/ext-4.1.1-gpl/ext-all-debug.js"></script>
+   <link rel="stylesheet" type="text/css" href="http://extjs.cachefly.net/ext-4.1.1-gpl/resources/css/ext-all-debug.css" />
+   <script type="text/javascript" src="http://extjs.cachefly.net/ext-4.1.1-gpl/ext-all-debug.js"></script>
+    
+    <!-- Summaries work better under 4.2.1 -->
+<!-- <link rel="stylesheet" type="text/css" href="http://cdn.sencha.com/ext/gpl/4.2.1/resources/css/ext-all-debug.css" />
+    <script type="text/javascript" src="http://cdn.sencha.com/ext/gpl/4.2.1/ext-all-debug.js"></script>  --> 
 
 	<!-- Application Specific Files -->
 	<link rel="stylesheet" type="text/css" href="../resources/example.css" />
 
 	<script type="text/javascript">
 	Ext.Loader.setConfig({
+            disableCaching: false,
 	    enabled: true,
 	    paths: {
 	        Ext: '.',
@@ -106,6 +111,59 @@
         ['Wal-Mart Stores, Inc.',45.45,0.73,1.63,'9/1 12:00am', 'Retail'],
         ['Walt Disney Company (The) (Holding Company)',29.89,0.24,0.81,'9/1 12:00am', 'Services']
     ];
+
+    var groupingData = [
+                        ['Northern', 'Connecticut'   ,1000.00, 1010.00, 1020.00, 1030.00],
+                        ['Northern', 'Delaware'      ,1000.00, 1010.00, 1020.00, 1030.00],
+                        ['Northern', 'Maine'         ,1000.00, 1010.00, 1020.00, 1030.00],
+                        ['Northern', 'Maryland'      ,1000.00, 1010.00, 1020.00, 1030.00],
+                        ['Northern', 'Massachusetts' ,1000.00, 1010.00, 1020.00, 1030.00],
+                        ['Northern', 'New Hamphire'  ,1000.00, 1010.00, 1020.00, 1030.00],
+                        ['Northern', 'New Jersey'    ,1000.00, 1010.00, 1020.00, 1030.00],
+                        ['Northern', 'New York'      ,1000.00, 1010.00, 1020.00, 1030.00],
+                        ['Northern', 'Pennsylvania'  ,1000.00, 1010.00, 1020.00, 1030.00],
+                        ['Northern', 'Rhode Island'  ,1000.00, 1010.00, 1020.00, 1030.00],
+                        ['Northern', 'Vermont'       ,1000.00, 1010.00, 1020.00, 1030.00],
+                        ['Central',  'Indiana'       ,2000.00, 2010.00, 2020.00, 2030.00],
+                        ['Central',  'Iowa'          ,2000.00, 2010.00, 2020.00, 2030.00],
+                        ['Central',  'Kentucky'      ,2000.00, 2010.00, 2020.00, 2030.00],
+                        ['Central',  'Michigan'      ,2000.00, 2010.00, 2020.00, 2030.00],
+                        ['Central',  'Minnesota'     ,2000.00, 2010.00, 2020.00, 2030.00],
+                        ['Central',  'Missouri'      ,2000.00, 2010.00, 2020.00, 2030.00],
+                        ['Central',  'Ohio'          ,2000.00, 2010.00, 2020.00, 2030.00],
+                        ['Central',  'Wisconsin'     ,2000.00, 2010.00, 2020.00, 2030.00],
+                        ['Southern', 'Alabama'       ,3000.00, 3010.00, 3020.00, 3030.00],
+                        ['Southern', 'Arkansas'      ,3000.00, 3010.00, 3020.00, 3030.00],
+                        ['Southern', 'Florida'       ,3000.00, 3010.00, 3020.00, 3030.00],
+                        ['Southern', 'Georgia'       ,3000.00, 3010.00, 3020.00, 3030.00],
+                        ['Southern', 'Louisiana'     ,3000.00, 3010.00, 3020.00, 3030.00],
+                        ['Southern', 'Mississippi'   ,3000.00, 3010.00, 3020.00, 3030.00],
+                        ['Southern', 'North Carolina',3000.00, 3010.00, 3020.00, 3030.00],
+                        ['Southern', 'South Carolina',3000.00, 3010.00, 3020.00, 3030.00],
+                        ['Southern', 'Tennessee'     ,3000.00, 3010.00, 3020.00, 3030.00],
+                        ['Southern', 'Virginia'      ,3000.00, 3010.00, 3020.00, 3030.00],
+                        ['Southern', 'West Virginia' ,3000.00, 3010.00, 3020.00, 3030.00],
+                        ['Western',  'Colorado'      ,4000.00, 4010.00, 4020.00, 4030.00],
+                        ['Western',  'Idaho'         ,4000.00, 4010.00, 4020.00, 4030.00],
+                        ['Western',  'Kansas'        ,4000.00, 4010.00, 4020.00, 4030.00],
+                        ['Western',  'Montana'       ,4000.00, 4010.00, 4020.00, 4030.00],
+                        ['Western',  'Nebraska'      ,4000.00, 4010.00, 4020.00, 4030.00],
+                        ['Western',  'New Mexico'    ,4000.00, 4010.00, 4020.00, 4030.00],
+                        ['Western',  'North Dakota'  ,4000.00, 4010.00, 4020.00, 4030.00],
+                        ['Western',  'Oklahoma'      ,4000.00, 4010.00, 4020.00, 4030.00],
+                        ['Western',  'South Dakota'  ,4000.00, 4010.00, 4020.00, 4030.00],
+                        ['Western',  'Texas'         ,4000.00, 4010.00, 4020.00, 4030.00],
+                        ['Western',  'Wyoming'       ,4000.00, 4010.00, 4020.00, 4030.00],
+                        ['Pacific',  'Alaska'        ,5000.00, 4010.00, 5020.00, 5030.00],
+                        ['Pacific',  'Arizona'       ,5000.00, 5010.00, 5020.00, 5030.00],
+                        ['Pacific',  'California'    ,5000.00, 5010.00, 5020.00, 5030.00],
+                        ['Pacific',  'Hawaii'        ,5000.00, 5010.00, 5020.00, 5030.00],
+                        ['Pacific',  'Nevada'        ,5000.00, 5010.00, 5020.00, 5030.00],
+                        ['Pacific',  'Oregon'        ,5000.00, 5010.00, 5020.00, 5030.00],
+                        ['Pacific',  'Utah'          ,5000.00, 5010.00, 5020.00, 5030.00],
+                        ['Pacific',  'Washington'    ,5000.00, 5010.00, 5020.00, 5030.00]
+                    ];
+    
 
 
 	    /**
@@ -390,6 +448,149 @@
 
             }}]
     });
+
+    var groupStore = Ext.create('Ext.data.ArrayStore', {
+       fields: [
+          {name: 'region',     type: 'string'},
+          {name: 'state',      type: 'string'},
+        	 {name: 'qtr1',       type: 'float'},
+        	 {name: 'qtr2',       type: 'float'},
+        	 {name: 'qtr3',       type: 'float'},
+        	 {name: 'qtr4',       type: 'float'}
+     	 ],
+     	 data: groupingData,
+  	    groupField: 'region'
+   });
+
+    var grid6 = Ext.create('Ext.grid.Panel', {
+       store: groupStore,
+       columns: [
+           {text: "Region", width: 120, sortable: true, dataIndex: 'region'},
+           {text: "State", width: 120, sortable: true, dataIndex: 'state'},
+           {text: "Quarter<br>1", width: 110, sortable: true, renderer: Ext.util.Format.usMoney, dataIndex: 'qtr1'},
+           {text: "Quarter<br>2", width: 110, sortable: true, renderer: Ext.util.Format.usMoney, dataIndex: 'qtr2'},
+           {text: "Quarter<br>3", width: 110, sortable: true, renderer: Ext.util.Format.usMoney, dataIndex: 'qtr3'},
+           {text: "Quarter<br>4", width: 110, sortable: true, renderer: Ext.util.Format.usMoney, dataIndex: 'qtr4'}
+       ],
+       columnLines: true,
+       width:600,
+       height:300,
+       title:'Grouping Grid',
+       features : [{
+        	 ftype : 'grouping',
+        	 groupHeaderTpl: '{columnName}: {name}',
+          hideGroupedHeader: true
+       }],
+       renderTo: Ext.getBody(),
+ 		 tbar: [{
+           text: 'Print',
+           iconCls: 'icon-print',
+           handler : function(){
+           	  Ext.ux.grid.Printer.printAutomatically = false;
+           	  Ext.ux.grid.Printer.print(grid6);
+           }
+       }]
+   });
+
+    var grid7 = Ext.create('Ext.grid.Panel', {
+       store: groupStore,
+       columns: [
+           {text: "Region", width: 120, sortable: true, dataIndex: 'region'},
+           {text: "State", width: 120, sortable: true, dataIndex: 'state', summaryRenderer: function() { return '<b>Totals</b>';}},
+           {text: "Quarter<br>1", width: 110, align: 'right', sortable: true, renderer: Ext.util.Format.usMoney, dataIndex: 'qtr1', summaryType: 'sum', summaryRenderer: Ext.util.Format.usMoney},
+           {text: "Quarter<br>2", width: 110, align: 'right', sortable: true, renderer: Ext.util.Format.usMoney, dataIndex: 'qtr2', summaryType: 'sum', summaryRenderer: Ext.util.Format.usMoney},
+           {text: "Quarter<br>3", width: 110, align: 'right', sortable: true, renderer: Ext.util.Format.usMoney, dataIndex: 'qtr3', summaryType: 'sum', summaryRenderer: Ext.util.Format.usMoney},
+           {text: "Quarter<br>4", width: 110, align: 'right', sortable: true, renderer: Ext.util.Format.usMoney, dataIndex: 'qtr4', summaryType: 'sum', summaryRenderer: Ext.util.Format.usMoney}
+       ],
+       columnLines: true,
+       width:600,
+       height:300,
+       title:'GroupingSummary Grid',
+       features : [{
+        	 ftype : 'groupingsummary',
+        	 groupHeaderTpl: '{columnName}: {name}',
+          hideGroupedHeader: true
+       }],
+       renderTo: Ext.getBody(),
+ 		 tbar: [{
+           text: 'Print',
+           iconCls: 'icon-print',
+           handler : function()
+           {
+           	  Ext.ux.grid.Printer.printAutomatically = false;
+           	  Ext.ux.grid.Printer.print(grid7);
+           }
+       }]
+   });
+
+    var grid8 = Ext.create('Ext.grid.Panel', {
+       store: groupStore,
+       columns: [
+           {text: "Region", width: 120, sortable: true, dataIndex: 'region'},
+           {text: "State", width: 120, sortable: true, dataIndex: 'state', summaryRenderer: function() { return '<b>Totals</b>';}},
+           {text: "Quarter<br>1", width: 110, align: 'right', sortable: true, renderer: Ext.util.Format.usMoney, dataIndex: 'qtr1', summaryType: 'sum', summaryRenderer: Ext.util.Format.usMoney},
+           {text: "Quarter<br>2", width: 110, align: 'right', sortable: true, renderer: Ext.util.Format.usMoney, dataIndex: 'qtr2', summaryType: 'sum', summaryRenderer: Ext.util.Format.usMoney},
+           {text: "Quarter<br>3", width: 110, align: 'right', sortable: true, renderer: Ext.util.Format.usMoney, dataIndex: 'qtr3', summaryType: 'sum', summaryRenderer: Ext.util.Format.usMoney},
+           {text: "Quarter<br>4", width: 110, align: 'right', sortable: true, renderer: Ext.util.Format.usMoney, dataIndex: 'qtr4', summaryType: 'sum', summaryRenderer: Ext.util.Format.usMoney}
+       ],
+       columnLines: true,
+       width:600,
+       height:300,
+       title:'Grouping with Overall Summary Grid',
+       features : [{
+        	 ftype : 'grouping',
+        	 groupHeaderTpl: '{columnName}: {name}',
+          hideGroupedHeader: true
+       },{
+     	    ftype : 'summary'
+   	    //dock : 'bottom'
+       }],
+       renderTo: Ext.getBody(),
+		 tbar: [{
+           text: 'Print',
+           iconCls: 'icon-print',
+           handler : function(){
+              Ext.ux.grid.Printer.printAutomatically = false;
+           	  Ext.ux.grid.Printer.print(grid8);
+           }
+        },{
+           xtype: 'tbseparator'
+        },{
+           xtype: 'tbtext',
+           text:  'Summaries work better under 4.2.1 and above!  This example should only have a grand total line'
+       }]
+   });
+   
+    var grid9 = Ext.create('Ext.grid.Panel', {
+       store: groupStore,
+       columns: [
+           {text: "Region", width: 120, sortable: true, dataIndex: 'region'},
+           {text: "State", width: 120, sortable: true, dataIndex: 'state', summaryRenderer: function() { return '<b>Totals</b>';}},
+           {text: "Quarter<br>1", width: 110, align: 'right', sortable: true, renderer: Ext.util.Format.usMoney, dataIndex: 'qtr1', summaryType: 'sum', summaryRenderer: Ext.util.Format.usMoney},
+           {text: "Quarter<br>2", width: 110, align: 'right', sortable: true, renderer: Ext.util.Format.usMoney, dataIndex: 'qtr2', summaryType: 'sum', summaryRenderer: Ext.util.Format.usMoney},
+           {text: "Quarter<br>3", width: 110, align: 'right', sortable: true, renderer: Ext.util.Format.usMoney, dataIndex: 'qtr3', summaryType: 'sum', summaryRenderer: Ext.util.Format.usMoney},
+           {text: "Quarter<br>4", width: 110, align: 'right', sortable: true, renderer: Ext.util.Format.usMoney, dataIndex: 'qtr4', summaryType: 'sum', summaryRenderer: Ext.util.Format.usMoney}
+       ],
+       columnLines: true,
+       width:700,
+       height:300,
+       title:'Overall Summary Grid',
+       features : [{
+     	    ftype : 'summary'
+   	    //dock : 'bottom'
+       }],
+       renderTo: Ext.getBody(),
+		 tbar: [{
+           text: 'Print',
+           iconCls: 'icon-print',
+           handler : function(){
+              Ext.ux.grid.Printer.printAutomatically = false;
+           	  Ext.ux.grid.Printer.print(grid9);
+           }
+       }]
+   });
+    
+
 });
 	</script>
 </head>
