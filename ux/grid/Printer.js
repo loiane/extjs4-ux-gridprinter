@@ -701,8 +701,10 @@ Ext.define("Ext.ux.grid.Printer", {
                        			         'unselectableAttr' : 'unselectable="on"',
                        			         'value'            : value
                                		   };
-                        	if (column.renderer)
-                        		value = column.renderer.call(this.grid, value, meta, rcd, -1, col - 1, this.grid.store, this.grid.view);
+				if (column.renderer && column.xtype != 'templatecolumn')
+					value = column.renderer.call(this.grid, value, meta, rcd, -1, col - 1, this.grid.store, this.grid.view);
+				else if (column.renderer && column.xtype == 'templatecolumn')
+					value = column.tpl.apply(rcd.data);
 
                         	return this.getHtml(value, meta);
                         },
