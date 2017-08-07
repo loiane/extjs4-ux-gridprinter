@@ -306,7 +306,7 @@ Ext.define("Ext.ux.grid.Printer", {
                     		value = column.tpl ? column.tpl.apply(rcd.data) : value;
                     	}
                     	else if (column.renderer) {
-                            if (column instanceof Ext.tree.Column) {
+                            if (column instanceof Ext.tree.Column || column.xtype == 'checkcolumn') { // to keep compatibility w/ Ext. 4.0 (since checkcolumn was introduced at 4.2.x)
                                 value = column.renderer.call(column, value, meta, rcd, -1, col - 1, this.grid.store, this.grid.view);
                             } else {
                                 value = column.renderer.call(this.grid, value, meta, rcd, -1, col - 1, this.grid.store, this.grid.view);
